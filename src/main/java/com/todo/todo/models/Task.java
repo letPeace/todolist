@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +24,7 @@ public class Task {
 
     @Getter
     @Setter
+    @NotBlank(message = "Fill a text for a task")
     private String text;
 
     @Getter
@@ -49,7 +51,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return String.format("TodoItem{id=%d, description='%s', complete='%s', createdDate='%s', modifiedDate='%s'}",
+        return String.format("Task{id=%d, text='%s', completed='%s', createdDate='%s', modifiedDate='%s'}",
         id, text, completed, createdDate, modifiedDate);
     }
 

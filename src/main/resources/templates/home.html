@@ -7,30 +7,44 @@
     </head>
     <body>
 
-        <h1 class="text-center">Todolist Application</h1>
+        <div class="container">
 
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Task</th>
-                    <th>Completed</th>
-                    <th>CreatedDate</th>
-                    <th>ModifiedDate</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="task : ${tasks}" th:class="${task.completed} ? success : warning">
-                    <td th:text="${task.id}"></td>
-                    <td th:text="${task.text}"></td>
-                    <td th:text="${task.completed}"></td>
-                    <td th:text="${task.createdDate}"></td>
-                    <td th:text="${task.modifiedDate}"></td>
-                </tr>
-            </tbody>
-        </table>
+            <h1 class="text-center">Todolist Application</h1>
+
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Actions</th>
+                        <th>Id</th>
+                        <th>Task</th>
+                        <th>Completed</th>
+                        <th>Created date</th>
+                        <th>Modified date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="task : ${tasks}" th:class="${task.completed} ? |bg-white text-secondary| : |bg-light text-dark|">
+                        <td>
+                            <div class="btn btn-group-sm" role="group">
+                                <a class="btn btn-outline-primary" th:href="@{/update/{id}(id=${task.id})}">Update</a>
+                                <a class="btn btn-outline-danger" th:href="@{/delete/{id}(id=${task.id})}">Delete</a>
+                            </div>
+                        </td>
+                        <td th:text="${task.id}"></td>
+                        <td th:text="${task.text}"></td>
+                        <td th:text="${task.completed}"></td>
+                        <td th:text="${#strings.substring(#strings.replace(task.createdDate,'T',' '),0,19)}"></td>
+                        <td th:text="${#strings.substring(#strings.replace(task.modifiedDate,'T',' '),0,19)}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><a class="btn btn-success" href="/create">Create a new task</a></p>
+
+        </div>
 
         <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>
         <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.min.js}"></script>
+
     </body>
 </html>
