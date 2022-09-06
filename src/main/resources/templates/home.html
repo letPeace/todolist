@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css} " />
+    </head>
+    <body>
+
+        <h1 class="text-center">Todolist Application</h1>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Task</th>
+                    <th>Completed</th>
+                    <th>CreatedDate</th>
+                    <th>ModifiedDate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="task : ${tasks}" th:class="${task.completed} ? success : warning">
+                    <td th:text="${task.id}"></td>
+                    <td th:text="${task.text}"></td>
+                    <td th:text="${task.completed}"></td>
+                    <td th:text="${task.createdDate}"></td>
+                    <td th:text="${task.modifiedDate}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <script th:src="@{/webjars/jquery/3.6.1/jquery.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/5.2.0/js/bootstrap.min.js}"></script>
+    </body>
+</html>
