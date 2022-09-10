@@ -7,7 +7,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.todo.todo.models.Task;
+import com.todo.todo.models.User;
 import com.todo.todo.repositories.TaskRepository;
+import com.todo.todo.repositories.UserRepository;
 
 @Component
 public class TaskDataLoader implements CommandLineRunner{
@@ -16,6 +18,8 @@ public class TaskDataLoader implements CommandLineRunner{
 
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -32,7 +36,14 @@ public class TaskDataLoader implements CommandLineRunner{
             taskRepository.save(task2);
             taskRepository.save(task3);
         }
+        if(userRepository.count() == 0){
+            User user1 = new User("name1", "password1");
+            User user2 = new User("name2", "password2");
+            userRepository.save(user1);
+            userRepository.save(user2);
+        }
         logger.info("NOTE: {} tasks exists!", taskRepository.count());
+        logger.info("NOTE: {} users exists!", userRepository.count());
     }
     
 }

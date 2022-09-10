@@ -3,13 +3,17 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css} " />
+        <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}" />
     </head>
     <body>
 
         <div class="container">
 
             <h1 class="text-center">Todolist Application</h1>
+
+            <form th:action="@{/logout}" method="POST">
+                <input type="submit" value="Sign Out"/>
+            </form>
 
             <table class="table table-bordered">
                 <thead class="thead-dark">
@@ -20,6 +24,7 @@
                         <th>Completed</th>
                         <th>Created date</th>
                         <th>Modified date</th>
+                        <th>Author</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,6 +40,7 @@
                         <td th:text="${task.completed}"></td>
                         <td th:text="${#strings.substring(#strings.replace(task.createdDate,'T',' '),0,19)}"></td>
                         <td th:text="${#strings.substring(#strings.replace(task.modifiedDate,'T',' '),0,19)}"></td>
+                        <td th:text="${task.user}"></td>
                     </tr>
                 </tbody>
             </table>
