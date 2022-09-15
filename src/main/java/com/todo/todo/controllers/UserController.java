@@ -25,7 +25,6 @@ import com.todo.todo.repositories.UserRepository;
 public class UserController {
 
     private final String registratePage = "registrate";
-    // private final String loginPage = "login";
     private final String redirectLoginPage = "redirect:/login";
     private final String redirectUsersPage = "redirect:/users";
 
@@ -33,7 +32,7 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/users")
-    public ModelAndView getHomePage(@AuthenticationPrincipal User user){
+    public ModelAndView getUsersPage(@AuthenticationPrincipal User user){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("users");
         modelAndView.addObject("users", userRepository.findAll());
@@ -41,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/deleteuser/{id}")
-    public String deleteTask(@PathVariable("id") Long id, Model model){
+    public String deleteUser(@PathVariable("id") Long id, Model model){
         User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found by id = " + id));
         userRepository.delete(user);
         return redirectUsersPage;

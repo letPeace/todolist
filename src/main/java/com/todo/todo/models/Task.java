@@ -12,6 +12,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import com.todo.todo.models.singletons.CategorySingleton;
+import com.todo.todo.models.singletons.UserSingleton;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,19 +41,28 @@ public class Task {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     public Task() {
     }
 
     public Task(String text){
-        this(text, new User("usernameNONE", "passwordNONE"));
+        this(text, UserSingleton.get(), CategorySingleton.get());
     }
 
-    public Task(String text, User user) {
+    public Task(String text, User user, Category category) {
+        this(text, Boolean.FALSE, Instant.now(), Instant.now(), user, category);
+    }
+
+    public Task(String text, Boolean completed, Instant createdDate, Instant modifiedDate, User user, Category category) {
         this.text = text;
-        this.completed = Boolean.FALSE;
-        this.createdDate = Instant.now();
-        this.modifiedDate = Instant.now();
+        this.completed = completed;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
         this.user = user;
+        this.category = category;
     }
 
     @Override

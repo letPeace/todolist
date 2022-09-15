@@ -16,32 +16,30 @@
                     <tr>
                         <th>Actions</th>
                         <th>Id</th>
-                        <th>Task</th>
-                        <th>Completed</th>
+                        <th>Category</th>
                         <th>Created date</th>
                         <th>Modified date</th>
                         <th>Author</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="task : ${tasks}" th:class="${task.completed} ? |bg-white text-secondary| : |bg-light text-dark|">
+                    <tr th:each="category : ${categories}">
                         <td>
                             <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" th:href="@{/update/{id}(id=${task.id})}">Update</a>
-                                <a class="btn btn-outline-danger" th:href="@{/delete/{id}(id=${task.id})}">Delete</a>
+                                <a class="btn btn-outline-primary" th:href="@{/categories/update/{id}(id=${category.id})}">Update</a>
+                                <a class="btn btn-outline-danger" th:href="@{/categories/delete/{id}(id=${category.id})}">Delete</a>
                             </div>
                         </td>
-                        <td th:text="${task.id}"></td>
-                        <td th:text="${task.text}"></td>
-                        <td th:text="${task.completed}"></td>
-                        <td th:text="${#strings.substring(#strings.replace(task.createdDate,'T',' '),0,19)}"></td>
-                        <td th:text="${#strings.substring(#strings.replace(task.modifiedDate,'T',' '),0,19)}"></td>
-                        <td th:text="${task.user}"></td>
+                        <td th:text="${category.id}"></td>
+                        <td th:text="${category.title}"></td>
+                        <td th:text="${#strings.substring(#strings.replace(category.createdDate,'T',' '),0,19)}"></td>
+                        <td th:text="${#strings.substring(#strings.replace(category.modifiedDate,'T',' '),0,19)}"></td>
+                        <td th:text="${category.user}"></td>
                     </tr>
                 </tbody>
             </table>
 
-            <p><a class="btn btn-success" href="/create">Create a new task</a></p>
+            <p><a class="btn btn-success" href="/categories/create">Create a new category</a></p>
             <p><a class="btn btn-dark" href="/registrate">Sign up</a></p>
             <p><a class="btn btn-dark" href="/login">Sign in</a></p>
             <p><a class="btn btn-dark" href="/users">Users list</a></p>

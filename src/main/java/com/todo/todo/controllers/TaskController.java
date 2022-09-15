@@ -30,7 +30,7 @@ public class TaskController {
     private TaskRepository taskRepository;
 
     @GetMapping("/tasks")
-    public ModelAndView getHomePage(){
+    public ModelAndView getTasksPage(){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("tasks");
         modelAndView.addObject("tasks", taskRepository.findAll());
@@ -47,7 +47,6 @@ public class TaskController {
     @PostMapping("/update/{id}")
     public String updateTask(@PathVariable("id") Long id, @Valid Task task, @AuthenticationPrincipal User user, BindingResult result, Model model){
         if(result.hasErrors()){
-            task.setId(id);
             return updateTaskPage;
         }
         task.setModifiedDate(Instant.now());
