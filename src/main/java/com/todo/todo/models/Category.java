@@ -56,4 +56,10 @@ public class Category {
         this.user = user;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Category{id=%d, title='%s', createdDate='%s', modifiedDate='%s'}",
+        id, title, createdDate, modifiedDate);
+    }
+
 }

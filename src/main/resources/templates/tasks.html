@@ -21,6 +21,7 @@
                         <th>Created date</th>
                         <th>Modified date</th>
                         <th>Author</th>
+                        <th>Category</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,6 +38,7 @@
                         <td th:text="${#strings.substring(#strings.replace(task.createdDate,'T',' '),0,19)}"></td>
                         <td th:text="${#strings.substring(#strings.replace(task.modifiedDate,'T',' '),0,19)}"></td>
                         <td th:text="${task.user}"></td>
+                        <td th:text="${task.category}"></td>
                     </tr>
                 </tbody>
             </table>
