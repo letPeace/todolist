@@ -11,7 +11,7 @@
 
                 <h1>Create a new task</h1>
 
-                <form action="#" th:action="@{/create}" th:object="${task}" method="POST">
+                <form action="#" th:action="@{/tasks/create}" th:object="${task}" method="POST">
                     <div class="form-group">
                         <label for="text">Text</label>
                         <input class="form-control" type="text" th:field="*{text}" id="text" placeholder="Put some text here">

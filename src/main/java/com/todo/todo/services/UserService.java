@@ -23,7 +23,7 @@ public class UserService implements UserDetailsService{
     @Autowired
     private UserRepository userRepository;
 
-    private final String registratePage = "registrate";
+    private final String createPage = "create_user";
     private final String redirectLoginPage = "redirect:/login";
 
     @Override
@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService{
         modelAndView.setViewName(redirectLoginPage);
         User userFromDatabase = userRepository.findByUsername(user.getUsername());
         if(userFromDatabase != null){
-            modelAndView.setViewName(registratePage);
+            modelAndView.setViewName(createPage);
             modelAndView.addObject("error", "User has been already registrated!");
             return modelAndView;
         }

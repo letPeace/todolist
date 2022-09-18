@@ -27,7 +27,9 @@
                         <td>
                             <div class="btn btn-group-sm" role="group">
                                 <a class="btn btn-outline-primary" th:href="@{/categories/update/{id}(id=${category.id})}">Update</a>
-                                <a class="btn btn-outline-danger" th:href="@{/categories/delete/{id}(id=${category.id})}">Delete</a>
+                                <form th:action="@{/categories/delete/{id}(id=${category.id})}" method="POST">
+                                    <input class="btn btn-outline-danger" type="submit" value="Delete">
+                                </form>
                             </div>
                         </td>
                         <td th:text="${category.id}"></td>
@@ -40,7 +42,7 @@
             </table>
 
             <p><a class="btn btn-success" href="/categories/create">Create a new category</a></p>
-            <p><a class="btn btn-dark" href="/registrate">Sign up</a></p>
+            <p><a class="btn btn-dark" href="/users/create">Sign up</a></p>
             <p><a class="btn btn-dark" href="/login">Sign in</a></p>
             <p><a class="btn btn-dark" href="/users">Users list</a></p>
             <p><a class="btn btn-dark" href="/tasks">Tasks list</a></p>

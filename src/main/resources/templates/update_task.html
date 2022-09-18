@@ -11,7 +11,7 @@
 
                 <h1>Update the task</h1>
 
-                <form action="#" th:action="@{/update/{id}(id=${task.id})}" th:object="${task}" method="POST">
+                <form action="#" th:action="@{/tasks/update/{id}(id=${task.id})}" th:object="${task}" method="POST">
                     <div class="form-group">
                         <label for="text">Text</label>
                         <input class="form-control" type="text" th:field="*{text}" id="text" placeholder="Put some text here">

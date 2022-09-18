@@ -14,7 +14,7 @@
                 Invalid username or password.
             </div>
             <span th:text="${error}"></span>
-            <form th:action="@{/registrate}" method="POST">
+            <form th:action="@{/users/create}" method="POST">
                 <div><label> Username : <input type="text" name="username"/> </label></div>
                 <div><label> Password: <input type="password" name="password"/> </label></div>
                 <div><input type="submit" value="Sign Up"/></div>

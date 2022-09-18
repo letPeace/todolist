@@ -21,6 +21,10 @@ import com.todo.todo.services.CategoryService;
 @RequestMapping("/categories")
 public class CategoryController {
 
+    private final String updatePage = "update_category";
+    private final String createPage = "create_category";
+    private final String redirectCategoriesPage = "redirect:/categories";
+
     @Autowired
     private CategoryService categoryService;
     
@@ -32,32 +36,32 @@ public class CategoryController {
         return modelAndView;
     }
 
-    @GetMapping("update/{id}")
+    @GetMapping("/update/{id}")
     public String getUpdateTaskForm(@PathVariable("id") Long id, Model model){
         Category category = categoryService.findById(id);
         model.addAttribute("category", category);
-        return "update_category";
+        return updatePage;
     }
 
-    @PostMapping("update/{id}")
+    @PostMapping("/update/{id}")
     public String updateTask(@PathVariable("id") Long id, @Valid Category category, @AuthenticationPrincipal User user, BindingResult result){
-        return categoryService.update(category, user, result) ? "redirect:/categories" : "redirect:/categories/update/{id}";
+        return categoryService.update(category, user, result) ? redirectCategoriesPage : "redirect:/categories/update/{id}";
     }
 
-    @GetMapping("delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteTask(@PathVariable("id") Long id){
         categoryService.delete(id);
-        return "redirect:/categories";
+        return redirectCategoriesPage;
     }
 
-    @GetMapping("create")
+    @GetMapping("/create")
     public String getCreateCategoryForm(Category category){
-        return "create_category";
+        return createPage;
     }
 
-    @PostMapping("create")
+    @PostMapping("/create")
     public String createCategory(@AuthenticationPrincipal User user, @Valid Category category, BindingResult result){
-        return categoryService.create(category, user, result) ? "redirect:/categories" : "create_category";
+        return categoryService.create(category, user, result) ? redirectCategoriesPage : createPage;
     }
 
 }

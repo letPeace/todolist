@@ -28,8 +28,10 @@
                     <tr th:each="task : ${tasks}" th:class="${task.completed} ? |bg-white text-secondary| : |bg-light text-dark|">
                         <td>
                             <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" th:href="@{/update/{id}(id=${task.id})}">Update</a>
-                                <a class="btn btn-outline-danger" th:href="@{/delete/{id}(id=${task.id})}">Delete</a>
+                                <a class="btn btn-outline-primary" th:href="@{/tasks/update/{id}(id=${task.id})}">Update</a>
+                                <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="POST">
+                                    <input class="btn btn-outline-danger" type="submit" value="Delete">
+                                </form>
                             </div>
                         </td>
                         <td th:text="${task.id}"></td>
@@ -43,8 +45,8 @@
                 </tbody>
             </table>
 
-            <p><a class="btn btn-success" href="/create">Create a new task</a></p>
-            <p><a class="btn btn-dark" href="/registrate">Sign up</a></p>
+            <p><a class="btn btn-success" href="/tasks/create">Create a new task</a></p>
+            <p><a class="btn btn-dark" href="/users/create">Sign up</a></p>
             <p><a class="btn btn-dark" href="/login">Sign in</a></p>
             <p><a class="btn btn-dark" href="/users">Users list</a></p>
             <p><a class="btn btn-dark" href="/tasks">Tasks list</a></p>
