@@ -23,6 +23,8 @@
                         <td>${user.password}</td>
                         <td>${user.createdDate}</td>
                     </tr>
+                    <#else>
+                    No existing users
                     </#list>
                 </tbody>
             </table>

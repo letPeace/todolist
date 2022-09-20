@@ -4,7 +4,8 @@
 <p><a class="btn btn-dark" href="/users">Users list</a></p>
 <p><a class="btn btn-dark" href="/tasks">Tasks list</a></p>
 <p><a class="btn btn-dark" href="/categories">Categories list</a></p>
-<form th:action="@{/logout}" method="POST">
-    <input type="submit" value="Sign Out"/>
+<form action="/logout" method="POST">
+    <input type="hidden" name="_csrf" value="${_csrf.token}" />
+    <button type="submit">Sign Out</button>
 </form>
 </#macro>

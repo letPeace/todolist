@@ -35,6 +35,8 @@
                         <td>${category.modifiedDate}</td>
                         <td>${category.user.username}</td>
                     </tr>
+                    <#else>
+                    No existing categories
                     </#list>
                 </tbody>
             </table>
