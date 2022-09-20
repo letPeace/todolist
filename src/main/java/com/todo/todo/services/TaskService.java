@@ -26,7 +26,7 @@ public class TaskService {
         return taskRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task not found by id = " + id));
     }
 
-    public Boolean create(Task task, User user, BindingResult result){
+    public Boolean create(Task task, BindingResult result, User user){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
@@ -38,7 +38,7 @@ public class TaskService {
         return Boolean.TRUE;
     }
 
-    public Boolean update(Task task, User user, BindingResult result){
+    public Boolean update(Task task, BindingResult result, User user){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
@@ -48,8 +48,10 @@ public class TaskService {
         return Boolean.TRUE;
     }
 
-    public Boolean delete(Long id){
-        Task task = findById(id);
+    public Boolean delete(Task task, BindingResult result){
+        if(result.hasErrors()){
+            return Boolean.FALSE;
+        }
         taskRepository.delete(task);
         return Boolean.TRUE;
     }

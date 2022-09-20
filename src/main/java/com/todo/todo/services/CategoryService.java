@@ -26,7 +26,7 @@ public class CategoryService {
         return categoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Category not found by id = " + id));
     }
 
-    public Boolean create(Category category, User user, BindingResult result){
+    public Boolean create(Category category, BindingResult result, User user){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
@@ -37,7 +37,7 @@ public class CategoryService {
         return Boolean.TRUE;
     }
 
-    public Boolean update(Category category, User user, BindingResult result){
+    public Boolean update(Category category, BindingResult result, User user){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
@@ -47,8 +47,10 @@ public class CategoryService {
         return Boolean.TRUE;
     }
 
-    public Boolean delete(Long id){
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Category not found by id = " + id));
+    public Boolean delete(Category category, BindingResult result){
+        if(result.hasErrors()){
+            return Boolean.FALSE;
+        }
         categoryRepository.delete(category);
         return Boolean.TRUE;
     }

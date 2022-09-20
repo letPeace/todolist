@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,39 +28,38 @@ public class CategoryController {
     private CategoryService categoryService;
     
     @GetMapping("")
-    public ModelAndView getCategoriesPage(@AuthenticationPrincipal User user){
+    public ModelAndView getCategoriesPage(){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("categories");
         modelAndView.addObject("categories", categoryService.findAll());
         return modelAndView;
     }
 
-    @GetMapping("/update/{id}")
-    public String getUpdateTaskForm(@PathVariable("id") Long id, Model model){
-        Category category = categoryService.findById(id);
+    @GetMapping("/update/{category}")
+    public String getUpdateCategoryPage(@Valid Category category, BindingResult result, Model model){
         model.addAttribute("category", category);
         return updatePage;
     }
 
-    @PostMapping("/update/{id}")
-    public String updateTask(@PathVariable("id") Long id, @Valid Category category, @AuthenticationPrincipal User user, BindingResult result){
-        return categoryService.update(category, user, result) ? redirectCategoriesPage : "redirect:/categories/update/{id}";
+    @PostMapping("/update/{category}")
+    public String updateCategory(@Valid Category category, BindingResult result, @AuthenticationPrincipal User user){
+        return categoryService.update(category, result, user) ? redirectCategoriesPage : "redirect:/categories/update/{id}";
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteTask(@PathVariable("id") Long id){
-        categoryService.delete(id);
+    @PostMapping("/delete/{category}")
+    public String deleteCategory(@Valid Category category, BindingResult result){
+        categoryService.delete(category, result);
         return redirectCategoriesPage;
     }
 
     @GetMapping("/create")
-    public String getCreateCategoryForm(Category category){
+    public String getCreateCategoryPage(Category category){
         return createPage;
     }
 
     @PostMapping("/create")
     public String createCategory(@AuthenticationPrincipal User user, @Valid Category category, BindingResult result){
-        return categoryService.create(category, user, result) ? redirectCategoriesPage : createPage;
+        return categoryService.create(category, result, user) ? redirectCategoriesPage : createPage;
     }
 
 }

@@ -3,7 +3,6 @@ package com.todo.todo.services;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.todo.todo.models.Role;
@@ -37,9 +37,14 @@ public class UserService implements UserDetailsService{
         return userRepository.findAll();
     }
 
-    public ModelAndView registrate(User user){
+    public ModelAndView create(User user, BindingResult result){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName(redirectLoginPage);
+        if(result.hasErrors()){
+            modelAndView.setViewName(createPage);
+            modelAndView.addObject("error", "User creation error!");
+            return modelAndView;
+        }
         User userFromDatabase = userRepository.findByUsername(user.getUsername());
         if(userFromDatabase != null){
             modelAndView.setViewName(createPage);
@@ -54,9 +59,12 @@ public class UserService implements UserDetailsService{
         return modelAndView;
     }
 
-    public void delete(Long id){
-        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found by id = " + id));
+    public Boolean delete(User user, BindingResult result){
+        if(result.hasErrors()){
+            return Boolean.FALSE;
+        }
         userRepository.delete(user);
+        return Boolean.TRUE;
     }
 
 }
