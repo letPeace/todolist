@@ -13,7 +13,7 @@
                 <form action="/tasks/create" method="POST">
                     <div class="form-group">
                         <label for="text">Text</label>
-                        <input class="form-control" type="text" id="text" placeholder="Put some text here">
+                        <input class="form-control" type="text" name="text" id="text" placeholder="Put some text here">
                     </div>
                     <@c.csrf></@c.csrf>
                     <button type="submit" class="btn btn-success">Create</button>

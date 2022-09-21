@@ -13,7 +13,7 @@
                 <form action="/categories/update/${category.id}" method="POST">
                     <div class="form-group">
                         <label for="title">Text</label>
-                        <input class="form-control" type="text" id="title" placeholder="Put some text here">
+                        <input class="form-control" type="text" name="title" id="title" placeholder="Put some text here" value="${category.title}">
                     </div>
                     <@c.csrf></@c.csrf>
                     <button type="submit" class="btn btn-success">Update</button>
