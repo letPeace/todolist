@@ -2,7 +2,7 @@
 <#import "/patterns/header.ftl" as h>
 <#import "/patterns/csrf.ftl" as c>
 
-<@bas.basis "users">
+<@bas.basis "update tasks">
 
             <@h.header></@h.header>
 
@@ -10,7 +10,7 @@
 
                 <h2>Update the task</h2>
 
-                <form action="/tasks/update/${task.id}" method="POST">
+                <form action="/tasks/update/${task.id?c}" method="POST">
                     <div class="form-group">
                         <label for="text">Text</label>
                         <input class="form-control" type="text" name="text" id="text" placeholder="Put some text here" value="${task.text}">

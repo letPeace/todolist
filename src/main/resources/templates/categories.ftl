@@ -22,14 +22,14 @@
                     <tr>
                         <td>
                             <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" href="/categories/update/${category.id}">Update</a>
-                                <form action="/categories/delete/${category.id}" method="POST">
+                                <a class="btn btn-outline-primary" href="/categories/update/${category.id?c}">Update</a>
+                                <form action="/categories/delete/${category.id?c}" method="POST">
                                     <input type="hidden" name="_csrf" value="${_csrf.token}" />
                                     <button class="btn btn-outline-danger" type="submit">Delete</button>
                                 </form>
                             </div>
                         </td>
-                        <td>${category.id}</td>
+                        <td>${category.id?c}</td>
                         <td>${category.title}</td>
                         <td>${category.createdDate}</td>
                         <td>${category.modifiedDate}</td>

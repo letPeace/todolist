@@ -3,7 +3,7 @@
 <#import "/patterns/header.ftl" as h>
 <#import "/patterns/csrf.ftl" as c>
 
-<@bas.basis "users">
+<@bas.basis "login">
 
             <@h.header></@h.header>
 

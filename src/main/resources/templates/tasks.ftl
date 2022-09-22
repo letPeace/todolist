@@ -25,20 +25,20 @@
                     <tr class="${task.completed?string('bg-white text-secondary','bg-light text-dark')}">
                         <td>
                             <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" href="/tasks/update/${task.id}">Update</a>
-                                <form action="/tasks/delete/${task.id}" method="POST">
+                                <a class="btn btn-outline-primary" href="/tasks/update/${task.id?c}">Update</a>
+                                <form action="/tasks/delete/${task.id?c}" method="POST">
                                     <input type="hidden" name="_csrf" value="${_csrf.token}" />
                                     <button class="btn btn-outline-danger" type="submit">Delete</button>
                                 </form>
                             </div>
                         </td>
-                        <td>${task.id}</td>
+                        <td>${task.id?c}</td>
                         <td>${task.text}</td>
                         <td>${task.completed?string('TRUE','FALSE')}</td>
                         <td>${task.createdDate}</td>
                         <td>${task.modifiedDate}</td>
                         <td><#if task.user??>${task.user.username}</#if></td>
-                        <td><#if task.category??>${task.category}</#if></td>
+                        <td><#if task.category??>${task.category.title}</#if></td>
                     </tr>
                     <#else>
                     No existing tasks

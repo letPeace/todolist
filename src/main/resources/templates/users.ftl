@@ -18,7 +18,7 @@
                 <tbody>
                     <#list users as user>
                     <tr class="bg-light text-dark">
-                        <td>${user.id}</td>
+                        <td>${user.id?c}</td>
                         <td>${user.username}</td>
                         <td>${user.password}</td>
                         <td>${user.createdDate}</td>
