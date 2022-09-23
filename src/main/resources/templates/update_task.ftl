@@ -2,7 +2,7 @@
 <#import "/patterns/header.ftl" as h>
 <#import "/patterns/csrf.ftl" as c>
 
-<@bas.basis "update tasks">
+<@bas.basis "update task">
 
             <@h.header></@h.header>
 
@@ -17,7 +17,7 @@
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" checked="${task.completed?string('TRUE','FALSE')}" name="completed" id="completed" />Completed
+                            <input type="checkbox" name="completed" id="completed" value="${task.completed?c}" ${task.completed?string("checked","")} onclick="taskCompletedHandler(this);"/>Completed
                         </label>
                     </div>
                     <@c.csrf></@c.csrf>
@@ -25,5 +25,7 @@
                 </form>
 
             </div>
+
+            <script src="/js/taskCompletedHandler.js"></script>
 
 </@bas.basis>
