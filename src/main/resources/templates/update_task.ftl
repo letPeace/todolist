@@ -20,6 +20,13 @@
                             <input type="checkbox" name="completed" id="completed" value="${task.completed?c}" ${task.completed?string("checked","")} onclick="taskCompletedHandler(this);"/>Completed
                         </label>
                     </div>
+                    <select name="category" class="form-select">
+                        <#list categories as category>
+                        <option value="${category.id?c}">${category.title}</option>
+                        <#else>
+                        No existing categories
+                        </#list>
+                    </select>
                     <@c.csrf></@c.csrf>
                     <button type="submit" class="btn btn-success">Update</button>
                 </form>

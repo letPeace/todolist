@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import com.todo.todo.models.Category;
 import com.todo.todo.models.Task;
 import com.todo.todo.models.User;
 import com.todo.todo.repositories.TaskRepository;
@@ -28,7 +29,7 @@ public class TaskService {
         return taskRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task not found by id = " + id));
     }
 
-    public Boolean create(Task task, BindingResult result, User user){
+    public Boolean create(Task task, BindingResult result, User user, Category category){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
@@ -36,11 +37,12 @@ public class TaskService {
         task.setCreatedDate(Instant.now());
         task.setModifiedDate(Instant.now());
         task.setUser(user);
+        task.setCategory(category);
         taskRepository.save(task);
         return Boolean.TRUE;
     }
 
-    public Boolean update(Task task, BindingResult result, User user, Map<Object, Object> form){
+    public Boolean update(Task task, BindingResult result, User user, Map<Object, Object> form, Category category){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
@@ -48,6 +50,7 @@ public class TaskService {
         else task.setCompleted(Boolean.FALSE);
         task.setModifiedDate(Instant.now());
         task.setUser(user);
+        task.setCategory(category);
         taskRepository.save(task);
         return Boolean.TRUE;
     }
