@@ -22,6 +22,10 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
+    public List<Category> findAllByUser(User user){
+        return categoryRepository.findAllByUser(user.getId());
+    }
+
     public Category findById(Long id){
         return categoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Category not found by id = " + id));
     }

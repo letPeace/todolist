@@ -25,6 +25,10 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public List<Task> findAllByUser(User user){
+        return taskRepository.findAllByUser(user.getId());
+    }
+
     public Task findById(Long id){
         return taskRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task not found by id = " + id));
     }
