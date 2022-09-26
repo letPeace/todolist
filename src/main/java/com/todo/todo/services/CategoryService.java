@@ -11,12 +11,15 @@ import org.springframework.validation.BindingResult;
 import com.todo.todo.models.Category;
 import com.todo.todo.models.User;
 import com.todo.todo.repositories.CategoryRepository;
+import com.todo.todo.repositories.UserRepository;
 
 @Service
 public class CategoryService {
     
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Category> findAll(){
         return categoryRepository.findAll();
@@ -54,6 +57,11 @@ public class CategoryService {
     public Boolean delete(Category category, BindingResult result){
         if(result.hasErrors()){
             return Boolean.FALSE;
+        }
+        User user = category.getUser();
+        if(user != null){
+            user.getCategories().remove(category);
+            userRepository.save(user);
         }
         categoryRepository.delete(category);
         return Boolean.TRUE;

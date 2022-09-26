@@ -13,13 +13,19 @@ import org.springframework.validation.BindingResult;
 import com.todo.todo.models.Category;
 import com.todo.todo.models.Task;
 import com.todo.todo.models.User;
+import com.todo.todo.repositories.CategoryRepository;
 import com.todo.todo.repositories.TaskRepository;
+import com.todo.todo.repositories.UserRepository;
 
 @Service
 public class TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Task> findAll(){
         return taskRepository.findAll();
@@ -62,6 +68,16 @@ public class TaskService {
     public Boolean delete(Task task, BindingResult result){
         if(result.hasErrors()){
             return Boolean.FALSE;
+        }
+        Category category = task.getCategory();
+        if(category != null){
+            category.getTasks().remove(task);
+            categoryRepository.save(category);
+        }
+        User user = task.getUser();
+        if(user != null){
+            user.getTasks().remove(task);
+            userRepository.save(user);
         }
         taskRepository.delete(task);
         return Boolean.TRUE;
