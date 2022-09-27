@@ -1,10 +1,11 @@
 package com.todo.todo.services;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,7 @@ public class TaskService {
     }
 
     public Boolean delete(Task task, BindingResult result){
-        if(result.hasErrors()){
+        if(result != null && result.hasErrors()){
             return Boolean.FALSE;
         }
         Category category = task.getCategory();
@@ -80,6 +81,15 @@ public class TaskService {
             userRepository.save(user);
         }
         taskRepository.delete(task);
+        return Boolean.TRUE;
+    }
+
+    public Boolean deleteAll(Set<Task> tasks){
+        Set<Task> tasksCopy = new HashSet<>(tasks);
+        for(Task task : tasksCopy){
+            Boolean deletingSuccess = delete(task, null);
+            if(!deletingSuccess) return Boolean.FALSE;
+        }
         return Boolean.TRUE;
     }
     

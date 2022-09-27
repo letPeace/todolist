@@ -20,6 +20,8 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TaskService taskService;
 
     public List<Category> findAll(){
         return categoryRepository.findAll();
@@ -63,6 +65,7 @@ public class CategoryService {
             user.getCategories().remove(category);
             userRepository.save(user);
         }
+        taskService.deleteAll(category.getTasks());
         categoryRepository.delete(category);
         return Boolean.TRUE;
     }
