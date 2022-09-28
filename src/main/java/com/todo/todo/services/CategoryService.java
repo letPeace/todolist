@@ -5,23 +5,29 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import com.todo.todo.models.Category;
 import com.todo.todo.models.User;
 import com.todo.todo.repositories.CategoryRepository;
-import com.todo.todo.repositories.UserRepository;
 
 @Service
 public class CategoryService {
     
     @Autowired
     private CategoryRepository categoryRepository;
+    @Lazy
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
+    @Lazy
     @Autowired
     private TaskService taskService;
+
+    public void save(Category category){
+        categoryRepository.save(category);
+    }
 
     public List<Category> findAll(){
         return categoryRepository.findAll();
@@ -63,7 +69,7 @@ public class CategoryService {
         User user = category.getUser();
         if(user != null){
             user.getCategories().remove(category);
-            userRepository.save(user);
+            userService.save(user);
         }
         taskService.deleteAll(category.getTasks());
         categoryRepository.delete(category);

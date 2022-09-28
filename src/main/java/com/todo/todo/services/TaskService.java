@@ -8,25 +8,30 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import com.todo.todo.models.Category;
 import com.todo.todo.models.Task;
 import com.todo.todo.models.User;
-import com.todo.todo.repositories.CategoryRepository;
 import com.todo.todo.repositories.TaskRepository;
-import com.todo.todo.repositories.UserRepository;
 
 @Service
 public class TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
+    @Lazy
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
+    @Lazy
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
+
+    public void save(Task task){
+        taskRepository.save(task);
+    }
 
     public List<Task> findAll(){
         return taskRepository.findAll();
@@ -67,18 +72,22 @@ public class TaskService {
     }
 
     public Boolean delete(Task task, BindingResult result){
-        if(result != null && result.hasErrors()){
+        if(result.hasErrors()){
             return Boolean.FALSE;
         }
+        return delete(task);
+    }
+
+    public Boolean delete(Task task){
         Category category = task.getCategory();
         if(category != null){
             category.getTasks().remove(task);
-            categoryRepository.save(category);
+            categoryService.save(category);
         }
         User user = task.getUser();
         if(user != null){
             user.getTasks().remove(task);
-            userRepository.save(user);
+            userService.save(user);
         }
         taskRepository.delete(task);
         return Boolean.TRUE;
@@ -87,7 +96,7 @@ public class TaskService {
     public Boolean deleteAll(Set<Task> tasks){
         Set<Task> tasksCopy = new HashSet<>(tasks);
         for(Task task : tasksCopy){
-            Boolean deletingSuccess = delete(task, null);
+            Boolean deletingSuccess = delete(task);
             if(!deletingSuccess) return Boolean.FALSE;
         }
         return Boolean.TRUE;

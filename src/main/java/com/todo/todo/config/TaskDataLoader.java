@@ -48,7 +48,7 @@ public class TaskDataLoader implements CommandLineRunner{
             Task task3 = new Task("Task3 -> user1, category2", user1, category2);
             task3.setCompleted(Boolean.TRUE);
             Task task4 = new Task("Task4 -> user2, category3", user2, category3);
-            Task task5 = new Task("Task5 user2, category3-> ", user2, category3);
+            Task task5 = new Task("Task5 -> user2, category3", user2, category3);
             task5.setCompleted(Boolean.TRUE);
             taskRepository.saveAll(Arrays.asList(task1, task2, task3, task4, task5));
         }
