@@ -1,11 +1,8 @@
-<#import "/patterns/navigation.ftl" as nav>
 <#import "/patterns/basis.ftl" as bas>
-<#import "/patterns/header.ftl" as h>
-<#import "/patterns/csrf.ftl" as c>
 
 <@bas.basis "create user">
 
-            <@h.header></@h.header>
+            <@bas.header />
 
             <#if param??>
                 <#if param.error??><div>Invalid username and password.</div></#if>
@@ -17,10 +14,10 @@
             <form action="/users/create" method="POST">
                 <div><label> Username : <input type="text" name="username"/> </label></div>
                 <div><label> Password: <input type="password" name="password"/> </label></div>
-                <@c.csrf></@c.csrf>
+                <@bas.csrf />
                 <div><button type="submit">Sign Up</button></div>
             </form>
             
-            <@nav.navigation />
+            <@bas.navigation />
 
 </@bas.basis>

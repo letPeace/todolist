@@ -1,34 +1,12 @@
-<#import "/patterns/navigation.ftl" as nav>
 <#import "/patterns/basis.ftl" as bas>
-<#import "/patterns/header.ftl" as h>
+<#import "/patterns/users.ftl" as usr>
 
 <@bas.basis "users">
 
-            <@h.header></@h.header>
+            <@bas.header />
 
-            <table class="table table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Id</th>
-                        <th>Username</th>
-                        <th>Password</th>
-                        <th>Created date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <#list users as user>
-                    <tr class="bg-light text-dark">
-                        <td>${user.id?c}</td>
-                        <td>${user.username}</td>
-                        <td>${user.password}</td>
-                        <td>${user.createdDate}</td>
-                    </tr>
-                    <#else>
-                    No existing users
-                    </#list>
-                </tbody>
-            </table>
+            <@usr.table />
 
-            <@nav.navigation />
+            <@bas.navigation />
 
 </@bas.basis>

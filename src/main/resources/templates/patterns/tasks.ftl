@@ -1,0 +1,85 @@
+<#import "/patterns/basis.ftl" as bas>
+
+<#macro table>
+
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Actions</th>
+                        <th>Id</th>
+                        <th>Task</th>
+                        <th>Completed</th>
+                        <th>Created date</th>
+                        <th>Modified date</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <#list tasks as task>
+                    <tr class="${task.completed?string('bg-white text-secondary','bg-light text-dark')}">
+                        <td>
+                            <div class="btn btn-group-sm" role="group">
+                                <a class="btn btn-outline-primary" href="/tasks/update/${task.id?c}">Update</a>
+                                <form action="/tasks/delete/${task.id?c}" method="POST">
+                                    <@bas.csrf />
+                                    <button class="btn btn-outline-danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                        <td>${task.id?c}</td>
+                        <td>${task.text}</td>
+                        <td>${task.completed?string('TRUE','FALSE')}</td>
+                        <td>${task.createdDate}</td>
+                        <td>${task.modifiedDate}</td>
+                        <td><#if task.user??>${task.user.username}</#if></td>
+                        <td><#if task.category??>${task.category.title}</#if></td>
+                    </tr>
+                    <#else>
+                    No existing tasks
+                    </#list>
+                </tbody>
+            </table>
+
+</#macro>
+
+<#macro createRedirect>
+
+<p><a class="btn btn-success" href="/tasks/create">Create a new task</a></p>
+
+</#macro>
+
+<#macro form type h2 action value button>
+
+            <div class="col-md-6">
+
+                <h2>${h2}</h2>
+
+                <form action="${action}" method="POST">
+                    <div class="form-group">
+                        <label for="text">Text</label>
+                        <input class="form-control" type="text" name="text" id="text" placeholder="Put some text here" ${value}>
+                    </div>
+                    <#if type=="update">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="completed" id="completed" value="${task.completed?c}" ${task.completed?string("checked","")} onclick="taskCompletedHandler(this);"/>Completed
+                        </label>
+                    </div>
+                    </#if>
+                    <select name="category" class="form-select">
+                        <#list categories as category>
+                        <option value="${category.id?c}">${category.title}</option>
+                        <#else>
+                        No existing categories
+                        </#list>
+                    </select>
+                    <@bas.csrf />
+                    <button type="submit" class="btn btn-success">${button}</button>
+                </form>
+
+            </div>
+
+            <#if type=="update"><script src="/js/taskCompletedHandler.js"></script></#if>
+
+</#macro>

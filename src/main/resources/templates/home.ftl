@@ -1,108 +1,22 @@
-<#import "/patterns/navigation.ftl" as nav>
 <#import "/patterns/basis.ftl" as bas>
-<#import "/patterns/header.ftl" as h>
+<#import "/patterns/categories.ftl" as ctg>
+<#import "/patterns/tasks.ftl" as tsk>
+<#import "/patterns/users.ftl" as usr>
 
 <@bas.basis "home">
 
-            <@h.header></@h.header>
+            <@bas.header />
 
-            <table class="table table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Id</th>
-                        <th>Username</th>
-                        <th>Password</th>
-                        <th>Created date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="bg-light text-dark">
-                        <td>${user.id?c}</td>
-                        <td>${user.username}</td>
-                        <td>${user.password}</td>
-                        <td>${user.createdDate}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <@usr.table />
 
-            <table class="table table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Actions</th>
-                        <th>Id</th>
-                        <th>Category</th>
-                        <th>Created date</th>
-                        <th>Modified date</th>
-                        <th>Author</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <#list categories as category>
-                    <tr>
-                        <td>
-                            <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" href="/categories/update/${category.id?c}">Update</a>
-                                <form action="/categories/delete/${category.id?c}" method="POST">
-                                    <input type="hidden" name="_csrf" value="${_csrf.token}" />
-                                    <button class="btn btn-outline-danger" type="submit">Delete</button>
-                                </form>
-                            </div>
-                        </td>
-                        <td>${category.id?c}</td>
-                        <td>${category.title}</td>
-                        <td>${category.createdDate}</td>
-                        <td>${category.modifiedDate}</td>
-                        <td>${category.user.username}</td>
-                    </tr>
-                    <#else>
-                    No existing categories
-                    </#list>
-                </tbody>
-            </table>
+            <@ctg.table />
 
-            <p><a class="btn btn-success" href="/categories/create">Create a new category</a></p>
+            <@ctg.createRedirect />
 
-            <table class="table table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Actions</th>
-                        <th>Id</th>
-                        <th>Task</th>
-                        <th>Completed</th>
-                        <th>Created date</th>
-                        <th>Modified date</th>
-                        <th>Author</th>
-                        <th>Category</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <#list tasks as task>
-                    <tr class="${task.completed?string('bg-white text-secondary','bg-light text-dark')}">
-                        <td>
-                            <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" href="/tasks/update/${task.id?c}">Update</a>
-                                <form action="/tasks/delete/${task.id?c}" method="POST">
-                                    <input type="hidden" name="_csrf" value="${_csrf.token}" />
-                                    <button class="btn btn-outline-danger" type="submit">Delete</button>
-                                </form>
-                            </div>
-                        </td>
-                        <td>${task.id?c}</td>
-                        <td>${task.text}</td>
-                        <td>${task.completed?string('TRUE','FALSE')}</td>
-                        <td>${task.createdDate}</td>
-                        <td>${task.modifiedDate}</td>
-                        <td><#if task.user??>${task.user.username}</#if></td>
-                        <td><#if task.category??>${task.category.title}</#if></td>
-                    </tr>
-                    <#else>
-                    No existing tasks
-                    </#list>
-                </tbody>
-            </table>
+            <@tsk.table />
 
-            <p><a class="btn btn-success" href="/tasks/create">Create a new task</a></p>
+            <@tsk.createRedirect />
 
-            <@nav.navigation />
+            <@bas.navigation />
 
 </@bas.basis>
