@@ -1,10 +1,10 @@
 <#import "/patterns/basis.ftl" as bas>
 <#import "/patterns/users.ftl" as usr>
 
-<@bas.basis "create user">
+<@bas.basis "update user">
 
             <@bas.header />
 
-            <@usr.form "create" "Create a new user" "/users/create" "Create" />
+            <@usr.form "update" "Update the user" "/users/update/${user.id?c}" "Update" />
 
 </@bas.basis>

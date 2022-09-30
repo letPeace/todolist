@@ -3,6 +3,7 @@ package com.todo.todo.services;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -45,6 +46,10 @@ public class UserService implements UserDetailsService{
         return userRepository.findAll();
     }
 
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
+
     public ModelAndView create(User user, BindingResult result){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName(redirectLoginPage);
@@ -53,7 +58,7 @@ public class UserService implements UserDetailsService{
             modelAndView.addObject("error", "User creation error!");
             return modelAndView;
         }
-        User userFromDatabase = userRepository.findByUsername(user.getUsername());
+        User userFromDatabase = findByUsername(user.getUsername());
         if(userFromDatabase != null){
             modelAndView.setViewName(createPage);
             modelAndView.addObject("error", "User has been already registrated!");
@@ -65,6 +70,22 @@ public class UserService implements UserDetailsService{
         user.setRoles(Collections.singleton(Role.USER));
         userRepository.save(user);
         return modelAndView;
+    }
+
+    public Boolean update(User user, BindingResult result, Map<Object, Object> form){
+        if(result.hasErrors()){
+            return Boolean.FALSE;
+        }
+        if(!form.get("username").equals(form.get("usernameConfirm")) || findByUsername((String) form.get("username"))!=null) return Boolean.FALSE;
+        if(!form.get("password").equals(form.get("passwordConfirm"))) return Boolean.FALSE;
+        return update(user, form);
+    }
+
+    public Boolean update(User user, Map<Object, Object> form){
+        String encodedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+        return Boolean.TRUE;
     }
 
     public Boolean delete(User user, BindingResult result){

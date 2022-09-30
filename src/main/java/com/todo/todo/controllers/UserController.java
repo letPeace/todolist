@@ -1,14 +1,18 @@
 package com.todo.todo.controllers;
 
+import java.util.Map;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.todo.todo.models.User;
@@ -21,6 +25,7 @@ import com.todo.todo.services.UserService;
 public class UserController {
 
     private final String createPage = "create_user";
+    private final String updatePage = "update_user";
     private final String redirectUsersPage = "redirect:/users";
 
     @Autowired
@@ -65,6 +70,17 @@ public class UserController {
     @PostMapping("/create")
     public ModelAndView createUser(@Valid User user, BindingResult result){
         return userService.create(user, result);
+    }
+
+    @GetMapping("/update/{user}")
+    public String getUpdateTaskPage(@Valid User user, BindingResult result, Model model){
+        model.addAttribute("user", user);
+        return updatePage;
+    }
+
+    @PostMapping("/update/{user}")
+    public String updateTask(@Valid User user, BindingResult result, @RequestParam Map<Object, Object> form){
+        return userService.update(user, result, form) ? redirectUsersPage : updatePage;
     }
 
 }

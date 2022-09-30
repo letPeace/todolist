@@ -53,3 +53,28 @@
                     </tr>
 
 </#macro>
+
+<#macro form type h2 action button>
+
+            <div class="col-md-6">
+
+                <h2>${h2}</h2>
+
+                <#if error??><span>${error}</span></#if>
+
+                <form action="${action}" method="POST">
+                    <div class="form-group"><label> Username: <input class="form-control" type="text" name="username"/> </label></div>
+                    <#if type=="update">
+                        <div class="form-group"><label> Confirm Username: <input class="form-control" type="text" name="usernameConfirm"/> </label></div>
+                    </#if>
+                    <div class="form-group"><label> Password: <input class="form-control" type="password" name="password"/> </label></div>
+                    <#if type=="update">
+                        <div class="form-group"><label> Confirm Password: <input class="form-control" type="password" name="passwordConfirm"/> </label></div>
+                    </#if>
+                    <@bas.csrf />
+                    <button type="submit" class="btn btn-success">${button}</button>
+                </form>
+
+            </div>
+
+</#macro>
