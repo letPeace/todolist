@@ -49,8 +49,11 @@ public class UserController {
     }
 
     @PostMapping("/delete/{user}")
-    public String deleteUser(@Valid User user, BindingResult result){
+    public String deleteUser(@Valid User user, BindingResult result, @AuthenticationPrincipal User userAuthenticated){
         userService.delete(user, result);
+        if(user.equals(userAuthenticated)){
+            // logout by POST request
+        }
         return redirectUsersPage;
     }
     

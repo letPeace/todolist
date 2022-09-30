@@ -1,22 +1,26 @@
+<#import "/patterns/basis.ftl" as bas>
+
 <#macro table>
 
             <table class="table table-bordered">
                 <thead class="thead-dark">
                     <tr>
+                        <th>Actions</th>
                         <th>Id</th>
                         <th>Username</th>
                         <th>Password</th>
                         <th>Created date</th>
+                        <th>Roles</th>
                     </tr>
                 </thead>
-                <#--  <@userInfo user id=user.id?c username=user.username password=user.password createdDate=user.createdDate />  -->
+                
                 <tbody>
                     <#if users??>
                         <#list users as user>
-                        <@userInfo id=user.id?c username=user.username password=user.password createdDate=user.createdDate />
+                        <@userInfo user />
                         </#list>
                     <#elseif user??>
-                        <@userInfo id=user.id?c username=user.username password=user.password createdDate=user.createdDate />
+                        <@userInfo user />
                     <#else>
                         No existing users
                     </#if>
@@ -25,13 +29,27 @@
 
 </#macro>
 
-<#macro userInfo id username password createdDate>
+<#macro userInfo user>
 
                     <tr class="bg-light text-dark">
-                        <td>${id}</td>
-                        <td>${username}</td>
-                        <td>${password}</td>
-                        <td>${createdDate}</td>
+                        <td>
+                            <div class="btn btn-group-sm" role="group">
+                                <a class="btn btn-outline-primary" href="/users/update/${user.id?c}">Update</a>
+                                <form action="/users/delete/${user.id?c}" method="POST">
+                                    <@bas.csrf />
+                                    <button class="btn btn-outline-danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                        <td>${user.id?c}</td>
+                        <td>${user.username}</td>
+                        <td>${user.password}</td>
+                        <td>${user.createdDate}</td>
+                        <td>
+                            <#list user.roles as role>
+                            <div>${role}</div>
+                            </#list>
+                        </td>
                     </tr>
 
 </#macro>

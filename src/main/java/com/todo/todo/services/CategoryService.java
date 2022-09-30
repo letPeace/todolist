@@ -1,8 +1,10 @@
 package com.todo.todo.services;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -66,6 +68,10 @@ public class CategoryService {
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
+        return delete(category);
+    }
+
+    public Boolean delete(Category category){
         User user = category.getUser();
         if(user != null){
             user.getCategories().remove(category);
@@ -73,6 +79,15 @@ public class CategoryService {
         }
         taskService.deleteAll(category.getTasks());
         categoryRepository.delete(category);
+        return Boolean.TRUE;
+    }
+
+    public Boolean deleteAll(Set<Category> categories){
+        Set<Category> categoriesCopy = new HashSet<>(categories);
+        for(Category category : categoriesCopy){
+            Boolean deletingSuccess = delete(category);
+            if(!deletingSuccess) return Boolean.FALSE;
+        }
         return Boolean.TRUE;
     }
 

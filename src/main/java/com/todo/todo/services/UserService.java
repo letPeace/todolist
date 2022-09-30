@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +23,9 @@ public class UserService implements UserDetailsService{
 
     @Autowired
     private UserRepository userRepository;
+    @Lazy
+    @Autowired
+    private CategoryService categoryService;
 
     private final String createPage = "create_user";
     private final String redirectLoginPage = "redirect:/login";
@@ -67,6 +71,11 @@ public class UserService implements UserDetailsService{
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
+        return delete(user);
+    }
+
+    public Boolean delete(User user){
+        categoryService.deleteAll(user.getCategories());
         userRepository.delete(user);
         return Boolean.TRUE;
     }

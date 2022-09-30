@@ -61,9 +61,34 @@ public class User implements UserDetails{
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public User(String username, String password, Set<Role> roles) {
+        this(username, password);
         this.createdDate = Instant.now();
-        // this.taskList = new LinkedList<>();
-        this.roles = new HashSet<>();
+        this.tasks = new HashSet<>();
+        this.categories = new HashSet<>();
+        this.roles = roles;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        User other = (User) obj;
+        if (id == null) {
+            if (other.id != null) return false;
+        } else if (!id.equals(other.id)) return false;
+        return true;
     }
 
     @Override
