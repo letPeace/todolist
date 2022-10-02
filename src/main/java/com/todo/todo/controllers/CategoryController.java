@@ -10,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.todo.todo.models.Category;
 import com.todo.todo.models.User;
@@ -22,18 +21,10 @@ public class CategoryController {
 
     private final String updatePage = "update_category";
     private final String createPage = "create_category";
-    private final String redirectCategoriesPage = "redirect:/categories";
+    private final String redirectHomePage = "redirect:/users/home";
 
     @Autowired
     private CategoryService categoryService;
-    
-    @GetMapping("")
-    public ModelAndView getCategoriesPage(){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("categories");
-        modelAndView.addObject("categories", categoryService.findAll());
-        return modelAndView;
-    }
 
     @GetMapping("/update/{category}")
     public String getUpdateCategoryPage(@Valid Category category, BindingResult result, Model model){
@@ -43,13 +34,13 @@ public class CategoryController {
 
     @PostMapping("/update/{category}")
     public String updateCategory(@Valid Category category, BindingResult result, @AuthenticationPrincipal User user){
-        return categoryService.update(category, result, user) ? redirectCategoriesPage : "redirect:/categories/update/{id}";
+        return categoryService.update(category, result, user) ? redirectHomePage : "redirect:/categories/update/{id}";
     }
 
     @PostMapping("/delete/{category}")
     public String deleteCategory(@Valid Category category, BindingResult result){
         categoryService.delete(category, result);
-        return redirectCategoriesPage;
+        return redirectHomePage;
     }
 
     @GetMapping("/create")
@@ -59,7 +50,7 @@ public class CategoryController {
 
     @PostMapping("/create")
     public String createCategory(@AuthenticationPrincipal User user, @Valid Category category, BindingResult result){
-        return categoryService.create(category, result, user) ? redirectCategoriesPage : createPage;
+        return categoryService.create(category, result, user) ? redirectHomePage : createPage;
     }
 
 }

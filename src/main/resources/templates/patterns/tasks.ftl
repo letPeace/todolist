@@ -1,4 +1,4 @@
-<#import "/patterns/basis.ftl" as bas>
+<#import "/patterns/navigation.ftl" as nav>
 
 <#macro table>
 
@@ -20,11 +20,8 @@
                     <tr class="${task.completed?string('bg-white text-secondary','bg-light text-dark')}">
                         <td>
                             <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" href="/tasks/update/${task.id?c}">Update</a>
-                                <form action="/tasks/delete/${task.id?c}" method="POST">
-                                    <@bas.csrf />
-                                    <button class="btn btn-outline-danger" type="submit">Delete</button>
-                                </form>
+                                <@nav.redirectUpdateTask task />
+                                <@nav.formDeleteTask task />
                             </div>
                         </td>
                         <td>${task.id?c}</td>
@@ -40,12 +37,6 @@
                     </#list>
                 </tbody>
             </table>
-
-</#macro>
-
-<#macro createRedirect>
-
-<p><a class="btn btn-success" href="/tasks/create">Create a new task</a></p>
 
 </#macro>
 
@@ -74,7 +65,7 @@
                         No existing categories
                         </#list>
                     </select>
-                    <@bas.csrf />
+                    <@nav.csrf />
                     <button type="submit" class="btn btn-success">${button}</button>
                 </form>
 

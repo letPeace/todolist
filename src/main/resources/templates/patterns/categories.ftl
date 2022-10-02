@@ -1,4 +1,5 @@
 <#import "/patterns/basis.ftl" as bas>
+<#import "/patterns/navigation.ftl" as nav>
 
 <#macro table>
 
@@ -18,11 +19,8 @@
                     <tr>
                         <td>
                             <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" href="/categories/update/${category.id?c}">Update</a>
-                                <form action="/categories/delete/${category.id?c}" method="POST">
-                                    <@bas.csrf />
-                                    <button class="btn btn-outline-danger" type="submit">Delete</button>
-                                </form>
+                                <@nav.redirectUpdateCategory category />
+                                <@nav.formDeleteCategory category />
                             </div>
                         </td>
                         <td>${category.id?c}</td>
@@ -39,12 +37,6 @@
 
 </#macro>
 
-<#macro createRedirect>
-
-<p><a class="btn btn-success" href="/categories/create">Create a new category</a></p>
-
-</#macro>
-
 <#macro form h2 action value button>
 
             <div class="col-md-6">
@@ -56,7 +48,7 @@
                         <label for="title">Text</label>
                         <input class="form-control" type="text" name="title" id="title" placeholder="Put some text here" ${value}>
                     </div>
-                    <@bas.csrf />
+                    <@nav.csrf />
                     <button type="submit" class="btn btn-success">${button}</button>
                 </form>
 

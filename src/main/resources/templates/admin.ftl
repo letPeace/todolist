@@ -4,7 +4,7 @@
 <#import "/patterns/users.ftl" as usr>
 <#import "/patterns/navigation.ftl" as nav>
 
-<@bas.basis "home">
+<@bas.basis "admin">
 
             <@bas.header />
 
@@ -12,17 +12,17 @@
 
             <@usr.table type="user" />
 
+            <h3 class="text-center">USERS</h3>
+
+            <@usr.table type="users" />
+
             <h3 class="text-center">CATEGORIES</h3>
 
             <@ctg.table />
 
-            <@nav.redirectCreateCategory />
-
             <h3 class="text-center">TASKS</h3>
 
             <@tsk.table />
-
-            <@nav.redirectCreateTask />
 
             <h3 class="text-left">NAVIGATION</h3>
 

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.todo.todo.models.Category;
 import com.todo.todo.models.Task;
@@ -27,20 +26,12 @@ public class TaskController {
 
     private final String updatePage = "update_task";
     private final String createPage = "create_task";
-    private final String redirectTasksPage = "redirect:/tasks";
+    private final String redirectHomePage = "redirect:/users/home";
 
     @Autowired
     private TaskService taskService;
     @Autowired
     private CategoryService categoryService;
-
-    @GetMapping("")
-    public ModelAndView getTasksPage(){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("tasks");
-        modelAndView.addObject("tasks", taskService.findAll());
-        return modelAndView;
-    }
 
     @GetMapping("/update/{task}")
     public String getUpdateTaskPage(@Valid Task task, BindingResult result, Model model){
@@ -52,13 +43,13 @@ public class TaskController {
     @PostMapping("/update/{task}")
     public String updateTask(@Valid Task task, BindingResult result, @AuthenticationPrincipal User user, @RequestParam Map<Object, Object> form){
         Category category = categoryService.findById(Long.parseLong(form.get("category").toString()));
-        return taskService.update(task, result, user, form, category) ? redirectTasksPage : updatePage;
+        return taskService.update(task, result, user, form, category) ? redirectHomePage : updatePage;
     }
 
     @PostMapping("/delete/{task}")
     public String deleteTask(@Valid Task task, BindingResult result){
         taskService.delete(task, result);
-        return redirectTasksPage;
+        return redirectHomePage;
     }
 
     @GetMapping("/create")
@@ -70,7 +61,7 @@ public class TaskController {
     @PostMapping("/create")
     public String createTask(@Valid Task task, BindingResult result, @AuthenticationPrincipal User user, @RequestParam Map<Object, Object> form){
         Category category = categoryService.findById(Long.parseLong(form.get("category").toString()));
-        return taskService.create(task, result, user, category) ? redirectTasksPage : createPage;
+        return taskService.create(task, result, user, category) ? redirectHomePage : createPage;
     }
 
 }

@@ -26,7 +26,7 @@ public class UserController {
 
     private final String createPage = "create_user";
     private final String updatePage = "update_user";
-    private final String redirectUsersPage = "redirect:/users";
+    private final String redirectUsersPage = "redirect:/users/home";
 
     @Autowired
     private UserService userService;
@@ -35,14 +35,6 @@ public class UserController {
     @Autowired
     private TaskService taskService;
 
-    @GetMapping("")
-    public ModelAndView getUsersPage(){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("users");
-        modelAndView.addObject("users", userService.findAll());
-        return modelAndView;
-    }
-
     @GetMapping("/home")
     public ModelAndView getHomePage(@AuthenticationPrincipal User user){
         ModelAndView modelAndView = new ModelAndView();
@@ -50,6 +42,19 @@ public class UserController {
         modelAndView.addObject("user", user);
         modelAndView.addObject("categories", categoryService.findAllByUser(user));
         modelAndView.addObject("tasks", taskService.findAllByUser(user));
+        modelAndView.addObject("page", "home");
+        return modelAndView;
+    }
+
+    @GetMapping("/admin")
+    public ModelAndView getAdminPage(@AuthenticationPrincipal User user){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin");
+        modelAndView.addObject("user", user);
+        modelAndView.addObject("users", userService.findAll());
+        modelAndView.addObject("categories", categoryService.findAll());
+        modelAndView.addObject("tasks", taskService.findAll());
+        modelAndView.addObject("page", "admin");
         return modelAndView;
     }
 

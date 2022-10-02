@@ -1,4 +1,5 @@
 <#import "/patterns/basis.ftl" as bas>
+<#import "/patterns/navigation.ftl" as nav>
 
 <@bas.basis "login">
 
@@ -9,15 +10,17 @@
                 <#if param.logout??><div>You have been logged out.</div></#if>
             </#if>
 
-            <#if message??><span>${message}</span></#if>
+            <#if error??><span>${error}</span></#if>
 
-            <form action="/login" method="POST">
-                <div><label> Username: <input type="text" name="username"/> </label></div>
-                <div><label> Password: <input type="password" name="password"/> </label></div>
-                <@bas.csrf />
-                <div><button type="submit">Sign In</button></div>
-            </form>
+            <@nav.formGreen "/login" "Sign In"> 
+                <div class="form-group">
+                    <label> Username: <input class="form-control" type="text" name="username"/> </label>
+                </div>
+                <div class="form-group">
+                    <label> Password: <input class="form-control" type="password" name="password"/> </label>
+                </div>
+            </@nav.formGreen>
 
-            <@bas.navigation />
+            <@nav.navigation />
 
 </@bas.basis>

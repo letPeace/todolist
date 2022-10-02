@@ -1,6 +1,6 @@
-<#import "/patterns/basis.ftl" as bas>
+<#import "/patterns/navigation.ftl" as nav>
 
-<#macro table>
+<#macro table type>
 
             <table class="table table-bordered">
                 <thead class="thead-dark">
@@ -15,11 +15,11 @@
                 </thead>
                 
                 <tbody>
-                    <#if users??>
+                    <#if type=="users" && users??>
                         <#list users as user>
                         <@userInfo user />
                         </#list>
-                    <#elseif user??>
+                    <#elseif type=="user" && user??>
                         <@userInfo user />
                     <#else>
                         No existing users
@@ -34,11 +34,8 @@
                     <tr class="bg-light text-dark">
                         <td>
                             <div class="btn btn-group-sm" role="group">
-                                <a class="btn btn-outline-primary" href="/users/update/${user.id?c}">Update</a>
-                                <form action="/users/delete/${user.id?c}" method="POST">
-                                    <@bas.csrf />
-                                    <button class="btn btn-outline-danger" type="submit">Delete</button>
-                                </form>
+                                <@nav.redirectUpdateUser user />
+                                <@nav.formDeleteUser user />
                             </div>
                         </td>
                         <td>${user.id?c}</td>
@@ -71,7 +68,7 @@
                     <#if type=="update">
                         <div class="form-group"><label> Confirm Password: <input class="form-control" type="password" name="passwordConfirm"/> </label></div>
                     </#if>
-                    <@bas.csrf />
+                    <@nav.csrf />
                     <button type="submit" class="btn btn-success">${button}</button>
                 </form>
 
