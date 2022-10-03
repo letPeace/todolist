@@ -1,9 +1,12 @@
 package com.todo.todo.services;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -76,14 +79,27 @@ public class UserService implements UserDetailsService{
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
-        if(!form.get("username").equals(form.get("usernameConfirm")) || findByUsername((String) form.get("username"))!=null) return Boolean.FALSE;
-        if(!form.get("password").equals(form.get("passwordConfirm"))) return Boolean.FALSE;
+        String usernameStored = user.getUsername();
+        String username = (String) form.get("username");
+        String usernameConfirm = (String) form.get("usernameConfirm");
+        String password = (String) form.get("password");
+        String passwordConfirm = (String) form.get("passwordConfirm");
+        if(!username.equals(usernameConfirm) ||
+            !password.equals(passwordConfirm) ||
+            !usernameStored.equals(username) && findByUsername(username)!=null) return Boolean.FALSE;
         return update(user, form);
     }
 
     public Boolean update(User user, Map<Object, Object> form){
         String encodedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
         user.setPassword(encodedPassword);
+
+        Set<String> roles = Arrays.stream(Role.values()).map(Role::name).collect(Collectors.toSet());
+        user.getRoles().clear();
+        for(Object key : form.keySet()){
+            if(roles.contains(key)) user.getRoles().add(Role.valueOf((String) key));
+        }
+
         userRepository.save(user);
         return Boolean.TRUE;
     }

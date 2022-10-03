@@ -5,6 +5,6 @@
 
             <@bas.header />
 
-            <@usr.form "update" "Update the user" "/users/update/${user.id?c}" "Update" />
+            <@usr.form "update" "Update the user" "/users/update/${user.id?c}" "Update" user isAdmin />
 
 </@bas.basis>

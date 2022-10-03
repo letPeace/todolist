@@ -51,7 +51,7 @@
 
 </#macro>
 
-<#macro form type h2 action button>
+<#macro form type h2 action button user isAdmin>
 
             <div class="col-md-6">
 
@@ -60,13 +60,30 @@
                 <#if error??><span>${error}</span></#if>
 
                 <form action="${action}" method="POST">
-                    <div class="form-group"><label> Username: <input class="form-control" type="text" name="username"/> </label></div>
+                    <div class="form-group">
+                        <label> Username: <input class="form-control" type="text" name="username" value="${user.username}"/> </label>
+                    </div>
                     <#if type=="update">
-                        <div class="form-group"><label> Confirm Username: <input class="form-control" type="text" name="usernameConfirm"/> </label></div>
+                    <div class="form-group">
+                        <label> Confirm Username: <input class="form-control" type="text" name="usernameConfirm" value="${user.username}"/> </label>
+                    </div>
                     </#if>
-                    <div class="form-group"><label> Password: <input class="form-control" type="password" name="password"/> </label></div>
+                    <div class="form-group">
+                        <label> Password: <input class="form-control" type="password" name="password" value=""/> </label>
+                    </div>
                     <#if type=="update">
-                        <div class="form-group"><label> Confirm Password: <input class="form-control" type="password" name="passwordConfirm"/> </label></div>
+                    <div class="form-group">
+                        <label> Confirm Password: <input class="form-control" type="password" name="passwordConfirm" value=""/> </label>
+                    </div>
+                    </#if>
+                    <#if isAdmin>
+                    <#list roles as role>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="${role}" id="${role}" ${user.roles?seq_contains(role)?string("checked", "")} />${role}
+                        </label>
+                    </div>
+                    </#list>
                     </#if>
                     <@nav.csrf />
                     <button type="submit" class="btn btn-success">${button}</button>

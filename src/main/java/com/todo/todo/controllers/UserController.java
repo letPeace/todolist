@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.todo.todo.models.Role;
 import com.todo.todo.models.User;
 import com.todo.todo.services.CategoryService;
 import com.todo.todo.services.TaskService;
@@ -42,11 +44,11 @@ public class UserController {
         modelAndView.addObject("user", user);
         modelAndView.addObject("categories", categoryService.findAllByUser(user));
         modelAndView.addObject("tasks", taskService.findAllByUser(user));
-        modelAndView.addObject("page", "home");
         return modelAndView;
     }
 
     @GetMapping("/admin")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ModelAndView getAdminPage(@AuthenticationPrincipal User user){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("admin");
@@ -54,7 +56,6 @@ public class UserController {
         modelAndView.addObject("users", userService.findAll());
         modelAndView.addObject("categories", categoryService.findAll());
         modelAndView.addObject("tasks", taskService.findAll());
-        modelAndView.addObject("page", "admin");
         return modelAndView;
     }
 
@@ -80,6 +81,8 @@ public class UserController {
     @GetMapping("/update/{user}")
     public String getUpdateTaskPage(@Valid User user, BindingResult result, Model model){
         model.addAttribute("user", user);
+        model.addAttribute("roles", Role.values());
+        model.addAttribute("isAdmin", user.getRoles().contains(Role.ADMIN));
         return updatePage;
     }
 
