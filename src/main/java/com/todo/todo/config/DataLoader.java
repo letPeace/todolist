@@ -1,14 +1,17 @@
 package com.todo.todo.config;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.todo.todo.models.Category;
+import com.todo.todo.models.Role;
 import com.todo.todo.models.Task;
 import com.todo.todo.models.User;
 import com.todo.todo.repositories.CategoryRepository;
@@ -16,9 +19,9 @@ import com.todo.todo.repositories.TaskRepository;
 import com.todo.todo.repositories.UserRepository;
 
 @Component
-public class TaskDataLoader implements CommandLineRunner{
+public class DataLoader implements CommandLineRunner{
 
-    private final Logger logger = LoggerFactory.getLogger(TaskDataLoader.class);
+    private final Logger logger = LoggerFactory.getLogger(DataLoader.class);
 
     @Autowired
     private TaskRepository taskRepository;
@@ -34,9 +37,10 @@ public class TaskDataLoader implements CommandLineRunner{
 
     private void loadSeedData(){
         if(userRepository.count() == 0 || categoryRepository.count() == 0 || taskRepository.count() == 0){
-            User user1 = new User("name1", "password1");
-            User user2 = new User("name2", "password2");
-            userRepository.saveAll(Arrays.asList(user1, user2));
+            User admin = new User("admin", new BCryptPasswordEncoder().encode("admin"), new HashSet<>(Arrays.asList(Role.USER, Role.ADMIN)));
+            User user1 = new User("user1", new BCryptPasswordEncoder().encode("user1"));
+            User user2 = new User("user2", new BCryptPasswordEncoder().encode("user2"));
+            userRepository.saveAll(Arrays.asList(admin, user1, user2));
             //
             Category category1 = new Category("Category1 -> user1", user1);
             Category category2 = new Category("Category2 -> user1", user1);
