@@ -2,6 +2,7 @@ package com.todo.todo.models;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,12 +60,12 @@ public class User implements UserDetails{
     }
 
     public User(String username, String password) {
-        this.username = username;
-        this.password = password;
+        this(username, password, Collections.singleton(Role.USER));
     }
 
     public User(String username, String password, Set<Role> roles) {
-        this(username, password);
+        this.username = username;
+        this.password = password;
         this.createdDate = Instant.now();
         this.tasks = new HashSet<>();
         this.categories = new HashSet<>();
