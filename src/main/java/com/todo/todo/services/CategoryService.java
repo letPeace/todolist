@@ -50,7 +50,6 @@ public class CategoryService {
         category.setCreatedDate(Instant.now());
         category.setModifiedDate(Instant.now());
         category.setUser(user);
-        categoryRepository.save(category);
         return Boolean.TRUE;
     }
 
@@ -60,7 +59,6 @@ public class CategoryService {
         }
         category.setModifiedDate(Instant.now());
         category.setUser(user);
-        categoryRepository.save(category);
         return Boolean.TRUE;
     }
 

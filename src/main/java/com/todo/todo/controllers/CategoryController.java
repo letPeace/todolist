@@ -5,11 +5,11 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.todo.todo.models.Category;
 import com.todo.todo.models.User;
@@ -26,31 +26,46 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    @GetMapping("/create")
+    public ModelAndView getCreateCategoryPage(ModelAndView model){
+        model.setViewName(createPage);
+        return model;
+    }
+
+    @PostMapping("/create")
+    public ModelAndView createCategory(@AuthenticationPrincipal User user, @Valid Category category, BindingResult result, ModelAndView model){
+        if(categoryService.create(category, result, user)){
+            model.setViewName(redirectHomePage);
+            categoryService.save(category);
+        } else{
+            model.setViewName(createPage);
+            model.addObject("category", category);
+        }
+        return model;
+    }
+
     @GetMapping("/update/{category}")
-    public String getUpdateCategoryPage(@Valid Category category, BindingResult result, Model model){
-        model.addAttribute("category", category);
-        return updatePage;
+    public ModelAndView getUpdateCategoryPage(@Valid Category category, BindingResult result, ModelAndView model){
+        model.setViewName(updatePage);
+        model.addObject("category", category);
+        return model;
     }
 
     @PostMapping("/update/{category}")
-    public String updateCategory(@Valid Category category, BindingResult result, @AuthenticationPrincipal User user){
-        return categoryService.update(category, result, user) ? redirectHomePage : "redirect:/categories/update/{id}";
+    public ModelAndView updateCategory(@Valid Category category, BindingResult result, @AuthenticationPrincipal User user, ModelAndView model){
+        if(categoryService.update(category, result, user)){
+            model.setViewName(redirectHomePage);
+            categoryService.save(category);
+        } else{
+            model.setViewName(updatePage);
+        }
+        return model;
     }
 
     @PostMapping("/delete/{category}")
     public String deleteCategory(@Valid Category category, BindingResult result){
         categoryService.delete(category, result);
         return redirectHomePage;
-    }
-
-    @GetMapping("/create")
-    public String getCreateCategoryPage(Category category){
-        return createPage;
-    }
-
-    @PostMapping("/create")
-    public String createCategory(@AuthenticationPrincipal User user, @Valid Category category, BindingResult result){
-        return categoryService.create(category, result, user) ? redirectHomePage : createPage;
     }
 
 }

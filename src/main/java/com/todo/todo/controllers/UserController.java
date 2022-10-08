@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +29,7 @@ public class UserController {
     private final String createPage = "create_user";
     private final String updatePage = "update_user";
     private final String redirectUsersPage = "redirect:/users/home";
+    private final String redirectLoginPage = "redirect:/login";
 
     @Autowired
     private UserService userService;
@@ -37,7 +38,7 @@ public class UserController {
     @Autowired
     private TaskService taskService;
 
-    @GetMapping("/home")
+    @GetMapping("/home")//
     public ModelAndView getHomePage(@AuthenticationPrincipal User user){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("home");
@@ -58,6 +59,51 @@ public class UserController {
         modelAndView.addObject("tasks", taskService.findAll());
         return modelAndView;
     }
+    
+    @GetMapping("/create")
+    public ModelAndView getCreateUserPage(ModelAndView model){
+        model.setViewName(createPage);
+        return model;
+    }
+
+    @PostMapping("/create")
+    public ModelAndView createUser(@Valid User user, BindingResult result, ModelAndView model){
+        userService.create(user, result, model);
+        Boolean hasError = model.getModelMap().containsKey("error");
+        if(!hasError){
+            model.setViewName(redirectLoginPage);
+            userService.save(user);
+        } else{
+            model.setViewName(createPage);
+            model.addObject("user", user);
+        }
+        return model;
+    }
+
+    @GetMapping("/update/{user}")
+    public ModelAndView getUpdateTaskPage(@Valid User user, BindingResult result, ModelAndView model){
+        if(result.hasErrors()){
+            model.setViewName(redirectUsersPage);
+            return model;
+        }
+        model.setViewName(updatePage);
+        model.addObject("user", user);
+        model.addObject("roles", Role.values());
+        model.addObject("isAdmin", user.isAdmin());
+        return model;
+    }
+
+    @PostMapping("/update/{id}")
+    public ModelAndView updateTask(@Valid User userForm, BindingResult result, @PathVariable(value="id") Long id, @RequestParam Map<String, String> form, ModelAndView model){
+        User user = userService.findById(id);
+        if(userService.update(user, userForm, result, form, model)){
+            model.setViewName(redirectUsersPage);
+            userService.save(user);
+        } else{
+            model.setViewName(updatePage);
+        }
+        return model;
+    }
 
     @PostMapping("/delete/{user}")
     public String deleteUser(@Valid User user, BindingResult result, @AuthenticationPrincipal User userAuthenticated){
@@ -66,29 +112,6 @@ public class UserController {
             // logout by POST request
         }
         return redirectUsersPage;
-    }
-    
-    @GetMapping("/create")
-    public String getCreateUserPage(){
-        return createPage;
-    }
-
-    @PostMapping("/create")
-    public ModelAndView createUser(@Valid User user, BindingResult result){
-        return userService.create(user, result);
-    }
-
-    @GetMapping("/update/{user}")
-    public String getUpdateTaskPage(@Valid User user, BindingResult result, Model model){
-        model.addAttribute("user", user);
-        model.addAttribute("roles", Role.values());
-        model.addAttribute("isAdmin", user.getRoles().contains(Role.ADMIN));
-        return updatePage;
-    }
-
-    @PostMapping("/update/{user}")
-    public String updateTask(@Valid User user, BindingResult result, @RequestParam Map<Object, Object> form){
-        return userService.update(user, result, form) ? redirectUsersPage : updatePage;
     }
 
 }

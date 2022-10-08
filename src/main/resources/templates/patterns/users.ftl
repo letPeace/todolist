@@ -51,7 +51,7 @@
 
 </#macro>
 
-<#macro form type h2 action button user isAdmin>
+<#macro form type h2 action button>
 
             <div class="col-md-6">
 
@@ -59,13 +59,17 @@
 
                 <#if error??><span>${error}</span></#if>
 
+                <#assign usernameValue = ''>
+                <#if user??>
+                <#assign usernameValue = user.username>
+                </#if>
                 <form action="${action}" method="POST">
                     <div class="form-group">
-                        <label> Username: <input class="form-control" type="text" name="username" value="${user.username}"/> </label>
+                        <label> Username: <input class="form-control" type="text" name="username" value="${usernameValue}"/> </label>
                     </div>
                     <#if type=="update">
                     <div class="form-group">
-                        <label> Confirm Username: <input class="form-control" type="text" name="usernameConfirm" value="${user.username}"/> </label>
+                        <label> Confirm Username: <input class="form-control" type="text" name="usernameConfirm" value="${usernameValue}"/> </label>
                     </div>
                     </#if>
                     <div class="form-group">
@@ -76,7 +80,7 @@
                         <label> Confirm Password: <input class="form-control" type="password" name="passwordConfirm" value=""/> </label>
                     </div>
                     </#if>
-                    <#if isAdmin>
+                    <#if isAdmin?? && isAdmin>
                     <#list roles as role>
                     <div class="checkbox">
                         <label>

@@ -5,6 +5,10 @@
 
             <@bas.header />
 
-            <@ctg.form "Create a new category" "/categories/create" "" "Create" />
+            <#assign value = ''>
+            <#if category??>
+            <#assign value = 'value=\"'+category.title+'\"'>
+            </#if>
+            <@ctg.form "Create a new category" "/categories/create" "${value}" "Create" />
 
 </@bas.basis>

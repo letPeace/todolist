@@ -98,6 +98,23 @@ public class User implements UserDetails{
         id, username, password, createdDate);
     }
 
+    public Boolean isAdmin(){
+        return getRoles().contains(Role.ADMIN);
+    }
+
+    public void clearRoles(){
+        getRoles().clear();
+        getRoles().add(Role.USER);
+    }
+
+    public void addRole(String roleName){
+        addRole(Role.valueOf(roleName));
+    }
+
+    public void addRole(Role role){
+        getRoles().add(role);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();

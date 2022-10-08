@@ -5,6 +5,10 @@
 
             <@bas.header />
 
-            <@tsk.form "create" "Create a new task" "/tasks/create" "" "Create" />
+            <#assign value = ''>
+            <#if task??>
+            <#assign value = 'value=\"'+task.text+'\"'>
+            </#if>
+            <@tsk.form "create" "Create a new task" "/tasks/create" "${value}" "Create" />
 
 </@bas.basis>

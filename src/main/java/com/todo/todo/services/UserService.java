@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,9 +32,6 @@ public class UserService implements UserDetailsService{
     @Autowired
     private CategoryService categoryService;
 
-    private final String createPage = "create_user";
-    private final String redirectLoginPage = "redirect:/login";
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetails userDetails = userRepository.findByUsername(username);
@@ -53,54 +51,62 @@ public class UserService implements UserDetailsService{
         return userRepository.findByUsername(username);
     }
 
-    public ModelAndView create(User user, BindingResult result){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName(redirectLoginPage);
+    public User findById(Long id){
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task not found by id = " + id));
+    }
+
+    public ModelAndView create(User user, BindingResult result, ModelAndView model){
         if(result.hasErrors()){
-            modelAndView.setViewName(createPage);
-            modelAndView.addObject("error", "User creation error!");
-            return modelAndView;
+            model.addObject("error", "User creation error!");
+            return model;
         }
         User userFromDatabase = findByUsername(user.getUsername());
         if(userFromDatabase != null){
-            modelAndView.setViewName(createPage);
-            modelAndView.addObject("error", "User has been already registrated!");
-            return modelAndView;
+            model.addObject("error", "User has been already registrated!");
+            return model;
         }
         String encodedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
         user.setPassword(encodedPassword);
         user.setCreatedDate(Instant.now());
         user.setRoles(Collections.singleton(Role.USER));
-        userRepository.save(user);
-        return modelAndView;
+        return model;
     }
 
-    public Boolean update(User user, BindingResult result, Map<Object, Object> form){
+    public Boolean update(User user, User userForm, BindingResult result, Map<String, String> form, ModelAndView model){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
         String usernameStored = user.getUsername();
-        String username = (String) form.get("username");
-        String usernameConfirm = (String) form.get("usernameConfirm");
-        String password = (String) form.get("password");
-        String passwordConfirm = (String) form.get("passwordConfirm");
-        if(!username.equals(usernameConfirm) ||
-            !password.equals(passwordConfirm) ||
-            !usernameStored.equals(username) && findByUsername(username)!=null) return Boolean.FALSE;
-        return update(user, form);
+        String username = form.get("username");
+        String usernameConfirm = form.get("usernameConfirm");
+        String password = form.get("password");
+        String passwordConfirm = form.get("passwordConfirm");
+        if(!usernameStored.equals(username) && findByUsername(username)!=null){
+            model.addObject("error", "User with such username already exists");
+            return Boolean.FALSE;
+        }
+        if(!username.equals(usernameConfirm)){
+            model.addObject("error", "Usernames must match");
+            return Boolean.FALSE;
+        }
+        if(!password.equals(passwordConfirm)){
+            model.addObject("error", "Passwords must match");
+            return Boolean.FALSE;
+        }
+        return update(user, userForm, form);
     }
 
-    public Boolean update(User user, Map<Object, Object> form){
-        String encodedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+    public Boolean update(User user, User userForm, Map<String, String> form){
+        user.setUsername(userForm.getUsername());
+        String encodedPassword = new BCryptPasswordEncoder().encode(userForm.getPassword());
         user.setPassword(encodedPassword);
 
         Set<String> roles = Arrays.stream(Role.values()).map(Role::name).collect(Collectors.toSet());
-        user.getRoles().clear();
-        for(Object key : form.keySet()){
-            if(roles.contains(key)) user.getRoles().add(Role.valueOf((String) key));
+        user.clearRoles();
+        for(String key : form.keySet()){
+            if(roles.contains(key)) user.addRole(key);
         }
 
-        userRepository.save(user);
         return Boolean.TRUE;
     }
 

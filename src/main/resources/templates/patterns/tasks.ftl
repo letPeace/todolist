@@ -60,7 +60,8 @@
                     </#if>
                     <select name="category" class="form-select">
                         <#list categories as category>
-                        <option value="${category.id?c}">${category.title}</option>
+                        <#assign selected = type=="update" && task.category==category || type=="create" && categorySelected=category>
+                        <option value="${category.id?c}" ${selected?string("selected", "")}>${category.title}</option>
                         <#else>
                         No existing categories
                         </#list>

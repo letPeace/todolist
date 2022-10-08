@@ -54,7 +54,6 @@ public class TaskService {
         task.setModifiedDate(Instant.now());
         task.setUser(user);
         task.setCategory(category);
-        taskRepository.save(task);
         return Boolean.TRUE;
     }
 
@@ -67,7 +66,6 @@ public class TaskService {
         task.setModifiedDate(Instant.now());
         task.setUser(user);
         task.setCategory(category);
-        taskRepository.save(task);
         return Boolean.TRUE;
     }
 
