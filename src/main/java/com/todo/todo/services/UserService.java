@@ -74,6 +74,7 @@ public class UserService implements UserDetailsService{
 
     public Boolean update(User user, User userForm, BindingResult result, Map<String, String> form, ModelAndView model){
         if(result.hasErrors()){
+            model.addObject("error", result.getAllErrors().get(0).getDefaultMessage());
             return Boolean.FALSE;
         }
         String usernameStored = user.getUsername();

@@ -33,7 +33,7 @@ public class CategoryController {
     }
 
     @PostMapping("/create")
-    public ModelAndView createCategory(@AuthenticationPrincipal User user, @Valid Category category, BindingResult result, ModelAndView model){
+    public ModelAndView createCategory(@Valid Category category, BindingResult result, @AuthenticationPrincipal User user, ModelAndView model){
         if(categoryService.create(category, result, user)){
             model.setViewName(redirectHomePage);
             categoryService.save(category);
@@ -45,7 +45,11 @@ public class CategoryController {
     }
 
     @GetMapping("/update/{category}")
-    public ModelAndView getUpdateCategoryPage(@Valid Category category, BindingResult result, ModelAndView model){
+    public ModelAndView getUpdateCategoryPage(@Valid Category category, BindingResult result, @AuthenticationPrincipal User user, ModelAndView model){
+        if(!(user.equals(category.getUser()) || user.isAdmin())){
+            model.setViewName(redirectHomePage);
+            return model;
+        }
         model.setViewName(updatePage);
         model.addObject("category", category);
         return model;
@@ -53,7 +57,11 @@ public class CategoryController {
 
     @PostMapping("/update/{category}")
     public ModelAndView updateCategory(@Valid Category category, BindingResult result, @AuthenticationPrincipal User user, ModelAndView model){
-        if(categoryService.update(category, result, user)){
+        if(!(user.equals(category.getUser()) || user.isAdmin())){
+            model.setViewName(redirectHomePage);
+            return model;
+        }
+        if(categoryService.update(category, result)){
             model.setViewName(redirectHomePage);
             categoryService.save(category);
         } else{
@@ -63,9 +71,11 @@ public class CategoryController {
     }
 
     @PostMapping("/delete/{category}")
-    public String deleteCategory(@Valid Category category, BindingResult result){
+    public ModelAndView deleteCategory(@Valid Category category, BindingResult result, @AuthenticationPrincipal User user, ModelAndView model){
+        model.setViewName(redirectHomePage);
+        if(!(user.equals(category.getUser()) || user.isAdmin())) return model;
         categoryService.delete(category, result);
-        return redirectHomePage;
+        return model;
     }
 
 }

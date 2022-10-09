@@ -61,7 +61,11 @@ public class TaskController {
     }
     
     @GetMapping("/update/{task}")
-    public ModelAndView getUpdateTaskPage(@Valid Task task, BindingResult result, ModelAndView model){
+    public ModelAndView getUpdateTaskPage(@Valid Task task, BindingResult result, @AuthenticationPrincipal User user, ModelAndView model){
+        if(!(user.equals(task.getUser()) || user.isAdmin())){
+            model.setViewName(redirectHomePage);
+            return model;
+        }
         model.setViewName(updatePage);
         model.addObject("task", task);
         model.addObject("categories", categoryService.findAll());
@@ -69,11 +73,15 @@ public class TaskController {
     }
 
     @PostMapping("/update/{task}")
-    public ModelAndView updateTask(@Valid Task task, BindingResult result, @AuthenticationPrincipal User user, @RequestParam Map<Object, Object> form, ModelAndView model){
-        Category category = categoryService.findById(Long.parseLong(form.get("category").toString()));
-        if(taskService.update(task, result, user, form, category)){
+    public ModelAndView updateTask(@Valid Task task, BindingResult result, @AuthenticationPrincipal User user, @RequestParam Map<String, String> form, ModelAndView model){
+        if(!(user.equals(task.getUser()) || user.isAdmin())){
             model.setViewName(redirectHomePage);
-            taskService.save(task); // save changed task to repository
+            return model;
+        }
+        // Fields 'text' and 'category' are already filled with updated values
+        if(taskService.update(task, result, form)){
+            model.setViewName(redirectHomePage);
+            taskService.save(task);
         } else{
             model.setViewName(updatePage);
             model.addObject("categories", categoryService.findAll());
@@ -83,9 +91,11 @@ public class TaskController {
     }
 
     @PostMapping("/delete/{task}")
-    public String deleteTask(@Valid Task task, BindingResult result){
+    public ModelAndView deleteTask(@Valid Task task, BindingResult result, @AuthenticationPrincipal User user, ModelAndView model){
+        model.setViewName(redirectHomePage);
+        if(!(user.equals(task.getUser()) || user.isAdmin())) return model;
         taskService.delete(task, result);
-        return redirectHomePage;
+        return model;
     }
 
 }

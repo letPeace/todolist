@@ -53,12 +53,11 @@ public class CategoryService {
         return Boolean.TRUE;
     }
 
-    public Boolean update(Category category, BindingResult result, User user){
+    public Boolean update(Category category, BindingResult result){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
         category.setModifiedDate(Instant.now());
-        category.setUser(user);
         return Boolean.TRUE;
     }
 

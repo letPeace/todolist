@@ -28,7 +28,7 @@ public class UserController {
 
     private final String createPage = "create_user";
     private final String updatePage = "update_user";
-    private final String redirectUsersPage = "redirect:/users/home";
+    private final String redirectHomePage = "redirect:/users/home";
     private final String redirectLoginPage = "redirect:/login";
 
     @Autowired
@@ -38,7 +38,7 @@ public class UserController {
     @Autowired
     private TaskService taskService;
 
-    @GetMapping("/home")//
+    @GetMapping("/home")
     public ModelAndView getHomePage(@AuthenticationPrincipal User user){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("home");
@@ -81,37 +81,49 @@ public class UserController {
     }
 
     @GetMapping("/update/{user}")
-    public ModelAndView getUpdateTaskPage(@Valid User user, BindingResult result, ModelAndView model){
-        if(result.hasErrors()){
-            model.setViewName(redirectUsersPage);
+    public ModelAndView getUpdateUserPage(@Valid User user, BindingResult result, @AuthenticationPrincipal User userAuthenticated, ModelAndView model){
+        if(result.hasErrors() || !(user.equals(userAuthenticated) || userAuthenticated.isAdmin())){
+            model.setViewName(redirectHomePage);
             return model;
         }
         model.setViewName(updatePage);
         model.addObject("user", user);
         model.addObject("roles", Role.values());
-        model.addObject("isAdmin", user.isAdmin());
+        model.addObject("isAdmin", userAuthenticated.isAdmin());
         return model;
     }
 
     @PostMapping("/update/{id}")
-    public ModelAndView updateTask(@Valid User userForm, BindingResult result, @PathVariable(value="id") Long id, @RequestParam Map<String, String> form, ModelAndView model){
+    public ModelAndView updateUser(@Valid User userForm, BindingResult result, @AuthenticationPrincipal User userAuthenticated, @PathVariable(value="id") Long id, @RequestParam Map<String, String> form, ModelAndView model){
         User user = userService.findById(id);
+        if(!(user.equals(userAuthenticated) || userAuthenticated.isAdmin())){
+            model.setViewName(redirectHomePage);
+            return model;
+        }
         if(userService.update(user, userForm, result, form, model)){
-            model.setViewName(redirectUsersPage);
+            model.setViewName(redirectHomePage);
             userService.save(user);
         } else{
             model.setViewName(updatePage);
+            model.addObject("user", user);
+            model.addObject("roles", Role.values());
+            model.addObject("isAdmin", userAuthenticated.isAdmin());
         }
         return model;
     }
 
     @PostMapping("/delete/{user}")
-    public String deleteUser(@Valid User user, BindingResult result, @AuthenticationPrincipal User userAuthenticated){
+    public ModelAndView deleteUser(@Valid User user, BindingResult result, @AuthenticationPrincipal User userAuthenticated, @PathVariable(value="id") Long id, ModelAndView model){
+        if(!(user.equals(userAuthenticated) || userAuthenticated.isAdmin())){
+            model.setViewName(redirectHomePage);
+            return model;
+        }
+        model.setViewName(redirectHomePage);
         userService.delete(user, result);
         if(user.equals(userAuthenticated)){
             // logout by POST request
         }
-        return redirectUsersPage;
+        return model;
     }
 
 }

@@ -57,15 +57,13 @@ public class TaskService {
         return Boolean.TRUE;
     }
 
-    public Boolean update(Task task, BindingResult result, User user, Map<Object, Object> form, Category category){
+    public Boolean update(Task task, BindingResult result, Map<String, String> form){
         if(result.hasErrors()){
             return Boolean.FALSE;
         }
         if(form.containsKey("completed")) task.setCompleted(Boolean.TRUE);
         else task.setCompleted(Boolean.FALSE);
         task.setModifiedDate(Instant.now());
-        task.setUser(user);
-        task.setCategory(category);
         return Boolean.TRUE;
     }
 
