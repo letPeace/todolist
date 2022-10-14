@@ -2,11 +2,16 @@ package com.todo.todo.controllers;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -113,15 +118,21 @@ public class UserController {
     }
 
     @PostMapping("/delete/{user}")
-    public ModelAndView deleteUser(@Valid User user, BindingResult result, @AuthenticationPrincipal User userAuthenticated, @PathVariable(value="id") Long id, ModelAndView model){
+    public ModelAndView deleteUser(@Valid User user, 
+                                    BindingResult result, 
+                                    @AuthenticationPrincipal User userAuthenticated, 
+                                    ModelAndView model, 
+                                    HttpServletRequest request, 
+                                    HttpServletResponse response){
         if(!(user.equals(userAuthenticated) || userAuthenticated.isAdmin())){
             model.setViewName(redirectHomePage);
             return model;
         }
-        model.setViewName(redirectHomePage);
+        model.setViewName(redirectLoginPage);
         userService.delete(user, result);
         if(user.equals(userAuthenticated)){
-            // logout by POST request
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(authentication != null) new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
         return model;
     }
