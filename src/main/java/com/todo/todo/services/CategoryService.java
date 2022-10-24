@@ -3,7 +3,6 @@ package com.todo.todo.services;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import com.todo.todo.exceptions.EntityNotFoundByIdException;
 import com.todo.todo.models.Category;
 import com.todo.todo.models.User;
 import com.todo.todo.repositories.CategoryRepository;
@@ -39,8 +39,8 @@ public class CategoryService {
         return categoryRepository.findAllByUser(user.getId());
     }
 
-    public Category findById(Long id){
-        return categoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Category not found by id = " + id));
+    public Category findById(Long id) throws RuntimeException{
+        return categoryRepository.findById(id).orElseThrow(() -> new EntityNotFoundByIdException("Category not found by id = " + id));
     }
 
     public Boolean create(Category category, BindingResult result, User user){

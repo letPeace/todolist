@@ -49,9 +49,9 @@
                 <form action="${action}" method="POST">
                     <div class="form-group">
                         <label for="text">Text</label>
-                        <input class="form-control" type="text" name="text" id="text" placeholder="Put some text here" ${value}>
+                        <input class="form-control" type="text" name="text" id="text" placeholder="Put some text here" value="${value}">
                     </div>
-                    <#if type=="update">
+                    <#if type=="update"> 
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" name="completed" id="completed" value="${task.completed?c}" ${task.completed?string("checked","")} onclick="taskCompletedHandler(this);"/>Completed
@@ -60,7 +60,7 @@
                     </#if>
                     <select name="category" class="form-select">
                         <#list categories as category>
-                        <#assign selected = type=="update" && task.category==category || type=="create" && categorySelected=category>
+                        <#assign selected = categorySelected==category>
                         <option value="${category.id?c}" ${selected?string("selected", "")}>${category.title}</option>
                         <#else>
                         No existing categories
