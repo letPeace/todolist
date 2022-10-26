@@ -54,7 +54,7 @@
                     <#if type=="update"> 
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="completed" id="completed" value="${task.completed?c}" ${task.completed?string("checked","")} onclick="taskCompletedHandler(this);"/>Completed
+                            <input type="checkbox" name="completed" id="completed" value="${completed?c}" ${completed?string("checked","")} onclick="taskCompletedHandler(this);"/>Completed
                         </label>
                     </div>
                     </#if>

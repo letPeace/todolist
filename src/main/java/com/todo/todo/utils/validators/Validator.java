@@ -15,9 +15,13 @@ public class Validator {
     @Autowired
     private ApplicationContext context;
     
+    public Boolean exists(Map<String, String> form, String key){
+        return form.containsKey(key);
+    }
+    
     public DataStorage getValue(Map<String, String> form, String key){
         DataStorage storage = (DataStorage) context.getBean("dataStorage");
-        if(!form.containsKey(key)) storage.putException(key, new NullPointerException("No '"+key+"' key existing!"));
+        if(!exists(form, key)) storage.putException(key, new NullPointerException("No '"+key+"' key existing!"));
         else storage.putData(key, form.get(key));
         return storage;
     }

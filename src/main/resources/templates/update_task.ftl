@@ -5,6 +5,6 @@
 
             <@bas.header />
 
-            <@tsk.form "update" "Update the task" "/tasks/update/${task.id?c}" task.text "Update" />
+            <@tsk.form "update" "Update the task" "/tasks/update/${id?c}" text "Update" />
 
 </@bas.basis>
