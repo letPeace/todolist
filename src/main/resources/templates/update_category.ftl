@@ -5,6 +5,6 @@
 
             <@bas.header />
 
-            <@ctg.form "Update the category" "/categories/update/${category.id?c}" "value=\"${category.title}\"" "Update" />
+            <@ctg.form "update" "Update the category" "/categories/update/${id?c}" title "Update" />
 
 </@bas.basis>

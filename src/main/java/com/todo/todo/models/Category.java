@@ -15,8 +15,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-import com.todo.todo.models.singletons.UserSingleton;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +22,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "category")
-public class Category {
+public class Category implements HavingUser {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,9 +45,9 @@ public class Category {
     public Category() {
     }
 
-    public Category(String title) {
+    /*public Category(String title) {
         this(title, UserSingleton.get());
-    }
+    }*/
 
     public Category(String title, User user){
         this(title, Instant.now(), Instant.now(), user);

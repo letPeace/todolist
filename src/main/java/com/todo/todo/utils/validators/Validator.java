@@ -2,41 +2,38 @@ package com.todo.todo.utils.validators;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.todo.todo.exceptions.ObjectIsEmptyException;
+import com.todo.todo.utils.BeanFactory;
 import com.todo.todo.utils.dto.DataStorage;
+import com.todo.todo.utils.enums.Values;
 
 @Component
 public class Validator {
-
-    @Autowired
-    private ApplicationContext context;
     
-    public Boolean exists(Map<String, String> form, String key){
+    protected Boolean exists(Map<String, String> form, String key){
         return form.containsKey(key);
     }
     
     public DataStorage getValue(Map<String, String> form, String key){
-        DataStorage storage = (DataStorage) context.getBean("dataStorage");
-        if(!exists(form, key)) storage.putException(key, new NullPointerException("No '"+key+"' key existing!"));
+        DataStorage storage = BeanFactory.dataStorage();
+        if(!exists(form, key)) storage.putException(key, new NullPointerException(Values.KEY_NOT_EXISTS+key));
         else storage.putData(key, form.get(key));
         return storage;
     }
 
     public DataStorage getString(String fieldName, String string){
-        DataStorage storage = (DataStorage) context.getBean("dataStorage");
+        DataStorage storage = BeanFactory.dataStorage();
         if(string.isBlank()){
-            storage.putException(fieldName, new ObjectIsEmptyException("Field '"+fieldName+"' is empty!")); // @NotBlank from Task.java should be used here
+            storage.putException(fieldName, new ObjectIsEmptyException(Values.FIELD_EMPTY+fieldName)); // @NotBlank from User/Task/Category should be used here
         }
         else storage.putData(fieldName, string.trim());
         return storage;
     }
 
     public DataStorage getString(Map<String, String> form, String key){
-        DataStorage storage = (DataStorage) context.getBean("dataStorage");
+        DataStorage storage = BeanFactory.dataStorage();
         // validate if the value exists
         storage.fill(getValue(form, key));
         // return if cannot get value
@@ -49,7 +46,7 @@ public class Validator {
     }
 
     public DataStorage getLong(Map<String, String> form, String key){
-        DataStorage storage = (DataStorage) context.getBean("dataStorage");
+        DataStorage storage = BeanFactory.dataStorage();
         // validate if the value exists
         storage.fill(getValue(form, key));
         // return if cannot get value
@@ -60,7 +57,7 @@ public class Validator {
     }
 
     public DataStorage getLong(String fieldName, String idString){
-        DataStorage storage = (DataStorage) context.getBean("dataStorage");
+        DataStorage storage = BeanFactory.dataStorage();
         Long number = 0L;
         try{
             number = Long.parseLong(idString);

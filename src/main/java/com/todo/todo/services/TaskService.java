@@ -8,18 +8,19 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import com.todo.todo.exceptions.EntityNotFoundByIdException;
 import com.todo.todo.models.Category;
 import com.todo.todo.models.Task;
 import com.todo.todo.models.User;
 import com.todo.todo.repositories.TaskRepository;
+import com.todo.todo.utils.BeanFactory;
 import com.todo.todo.utils.dto.DataStorage;
+import com.todo.todo.utils.enums.TaskValues;
+import com.todo.todo.utils.enums.Values;
+import com.todo.todo.utils.validators.AccessChecker;
 import com.todo.todo.utils.validators.CategoryValidator;
 import com.todo.todo.utils.validators.TaskValidator;
 import com.todo.todo.utils.validators.Validator;
@@ -44,7 +45,11 @@ public class TaskService {
     private Validator categoryValidator;
 
     @Autowired
-    private ApplicationContext context;
+    private AccessChecker<Task> accessChecker;
+
+    /*
+     * METHODS CALLING REPOSITORY
+     */
 
     public void save(Task task){
         taskRepository.save(task);
@@ -59,59 +64,29 @@ public class TaskService {
     }
 
     public Task findById(Long id){
-        return taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundByIdException("Task not found by id = " + id));
+        return taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundByIdException(TaskValues.NOT_FOUND + id));
     }
 
-    public Boolean userHasAccess(User user, Task task){
-        Boolean userIsUser = user.equals(task.getUser());
-        Boolean admin = user.isAdmin();
-        return userIsUser || admin;
-    }
+    /*
+     * METHODS CALLED BY CONTROLLER
+     */
 
-    public void checkAccess(DataStorage storage, User user, Task task){
-        if(!userHasAccess(user, task)) storage.putException("access", new AccessDeniedException("Access denied for the user!"));
-    }
+    public DataStorage get(User user, Long id){
+        DataStorage storage = BeanFactory.dataStorage();
 
-    public Task getTask(DataStorage storage, Long id){
-        // find the task
-        var taskValidatorVar = (TaskValidator) taskValidator;
-        DataStorage storageTask = taskValidatorVar.getTask(id);
-        storage.fill(storageTask);
-        Task task = null;
-        if(!storageTask.hasExceptions()) task = (Task) storage.getData("task");
-        return task;
-    }
+        Task task = getTask(storage, id);
 
-    public String getText(DataStorage storage, Map<String, String> form){ // it must be in common Service
-        // validate a text
-        DataStorage storageText = taskValidator.getString(form, "text");
-        storage.fill(storageText);
-        String text = null;
-        if(!storageText.hasExceptions()) text = (String) storageText.getData("text");
-        return text;
-    }
+        // check if task is not found
+        if(storage.hasExceptions()) return storage;
 
-    public Category getCategory(DataStorage storage, Map<String, String> form){ // it must be in CategoryService
-        // validate a category
-        var categoryValidatorVar = (CategoryValidator) categoryValidator;
-        DataStorage storageCategory = categoryValidatorVar.getCategory(form);
-        storage.fill(storageCategory);
-        Category category = null;
-        if(!storageCategory.hasExceptions()) category = (Category) storageCategory.getData("category");
-        return category;
-    }
+        // check if user has access
+        accessChecker.check(storage, user, task);
 
-    public Boolean getCompleted(DataStorage storage, Map<String, String> form){
-        // validate completed field
-        var taskValidatorVar = (TaskValidator) taskValidator;
-        DataStorage storageCompleted = taskValidatorVar.getCompleted(form);
-        storage.fill(storageCompleted);
-        Boolean completed = (Boolean) storage.getData("completed");
-        return completed;
+        return storage;
     }
 
     public DataStorage create(User user, Map<String, String> form) throws RuntimeException{
-        DataStorage storage = (DataStorage) context.getBean(DataStorage.class);
+        DataStorage storage = BeanFactory.dataStorage();
 
         // validate values
         String text = getText(storage, form);
@@ -133,8 +108,8 @@ public class TaskService {
         return storage;
     }
 
-    public DataStorage update(Long id, User user, Map<String, String> form){
-        DataStorage storage = (DataStorage) context.getBean(DataStorage.class);
+    public DataStorage update(User user, Long id, Map<String, String> form){
+        DataStorage storage = BeanFactory.dataStorage();
 
         // find the task to update
         Task task = getTask(storage, id);
@@ -143,7 +118,7 @@ public class TaskService {
         if(storage.hasExceptions()) return storage;
 
         // check if user has access
-        checkAccess(storage, user, task);
+        accessChecker.check(storage, user, task);
         if(storage.hasExceptions()) return storage;
 
         // validate values
@@ -166,35 +141,88 @@ public class TaskService {
         return storage;
     }
 
-    public Boolean delete(Task task, BindingResult result){
-        if(result.hasErrors()){
-            return Boolean.FALSE;
-        }
-        return delete(task);
+    public DataStorage delete(User user, Long id){
+        // find task by id, then check access
+        DataStorage storage = get(user, id);
+
+        // check if task is not found or user does not have access to it
+        if(storage.hasExceptions()) return storage;
+
+        storage.fill(delete((Task) storage.getData(Values.TASK)));
+
+        return storage;
     }
 
-    public Boolean delete(Task task){
+    protected DataStorage delete(Task task){ // task must be valid
+        DataStorage storage = BeanFactory.dataStorage();
+
         Category category = task.getCategory();
-        if(category != null){
+        if(category != null){ // is it possible ?
             category.getTasks().remove(task);
             categoryService.save(category);
         }
+        
         User user = task.getUser();
-        if(user != null){
-            user.getTasks().remove(task);
-            userService.save(user);
-        }
+        user.getTasks().remove(task);
+        userService.save(user);
+
         taskRepository.delete(task);
-        return Boolean.TRUE;
+        return storage;
     }
 
-    public Boolean deleteAll(Set<Task> tasks){
+    protected DataStorage deleteAll(Set<Task> tasks){ // tasks must be valid
+        DataStorage storage = BeanFactory.dataStorage();
+
         Set<Task> tasksCopy = new HashSet<>(tasks);
+
         for(Task task : tasksCopy){
-            Boolean deletingSuccess = delete(task);
-            if(!deletingSuccess) return Boolean.FALSE;
+            storage.fill(delete(task));
+            if(storage.hasExceptions()) return storage;
         }
-        return Boolean.TRUE;
+
+        return storage;
     }
     
+    /*
+     * METHODS CALLING VALIDATOR
+     */
+
+    public Task getTask(DataStorage storage, Long id){
+        // validate the task
+        var taskValidatorVar = (TaskValidator) taskValidator;
+        DataStorage storageTask = taskValidatorVar.getTask(id);
+        storage.fill(storageTask);
+        Task task = null;
+        if(!storageTask.hasExceptions()) task = (Task) storage.getData(Values.TASK);
+        return task;
+    }
+
+    public String getText(DataStorage storage, Map<String, String> form){ // it must be in common Service ?
+        // validate a text
+        DataStorage storageText = taskValidator.getString(form, Values.TEXT);
+        storage.fill(storageText);
+        String text = null;
+        if(!storageText.hasExceptions()) text = (String) storageText.getData(Values.TEXT);
+        return text;
+    }
+
+    public Category getCategory(DataStorage storage, Map<String, String> form){ // it must be in CategoryService ?
+        // validate a category
+        var categoryValidatorVar = (CategoryValidator) categoryValidator;
+        DataStorage storageCategory = categoryValidatorVar.getCategory(form);
+        storage.fill(storageCategory);
+        Category category = null;
+        if(!storageCategory.hasExceptions()) category = (Category) storageCategory.getData(Values.CATEGORY);
+        return category;
+    }
+
+    public Boolean getCompleted(DataStorage storage, Map<String, String> form){
+        // validate completed field
+        var taskValidatorVar = (TaskValidator) taskValidator;
+        DataStorage storageCompleted = taskValidatorVar.getCompleted(form);
+        storage.fill(storageCompleted);
+        Boolean completed = (Boolean) storage.getData(Values.COMPLETED);
+        return completed;
+    }
+
 }

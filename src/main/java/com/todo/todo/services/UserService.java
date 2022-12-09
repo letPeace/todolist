@@ -32,6 +32,10 @@ public class UserService implements UserDetailsService{
     @Autowired
     private CategoryService categoryService;
 
+    /*
+     * METHODS CALLING REPOSITORY
+     */
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetails userDetails = userRepository.findByUsername(username);
@@ -54,6 +58,10 @@ public class UserService implements UserDetailsService{
     public User findById(Long id){
         return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task not found by id = " + id));
     }
+
+    /*
+     * METHODS CALLED BY CONTROLLER
+     */
 
     public ModelAndView create(User user, BindingResult result, ModelAndView model){
         if(result.hasErrors()){

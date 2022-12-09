@@ -3,12 +3,9 @@ package com.todo.todo.controllers;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,32 +19,35 @@ import com.todo.todo.models.User;
 import com.todo.todo.services.CategoryService;
 import com.todo.todo.services.TaskService;
 import com.todo.todo.utils.dto.DataStorage;
+import com.todo.todo.utils.enums.CategoryValues;
+import com.todo.todo.utils.enums.TaskValues;
+import com.todo.todo.utils.enums.Values;
 
 @Controller
 @RequestMapping("/tasks")
 public class TaskController {
-
-    private final String updatePage = "update_task";
-    private final String createPage = "create_task";
-    private final String redirectHomePage = "redirect:/users/home";
 
     @Autowired
     private TaskService taskService;
     @Autowired
     private CategoryService categoryService;
 
+    /*
+     * MAPPING METHODS
+     */
+
     @GetMapping("/create")
     public ModelAndView getCreateTaskPage(ModelAndView model, @AuthenticationPrincipal User user){
         List<Category> categories = categoryService.findAllByUser(user);
         if(categories.isEmpty()){
-            model.setViewName(redirectHomePage);
-            model.addObject("error", "At least one category must exist to create a task!");
+            model.setViewName(Values.REDIRECT_HOME_PAGE);
+            model.addObject(Values.CATEGORY_ERROR, CategoryValues.NO_CATEGORIES_EXIST);
             return model;
         }
-        model.setViewName(createPage);
-        model.addObject("text", "To do text");
-        model.addObject("categories", categories);
-        model.addObject("categorySelected", categories.get(0));
+        model.setViewName(TaskValues.CREATE_PAGE);
+        model.addObject(Values.TEXT, Values.TEXT_DEFAULT);
+        model.addObject(Values.CATEGORIES, categories);
+        model.addObject(Values.CATEGORY_SELECTED, categories.get(0));
         return model;
     }
 
@@ -57,39 +57,39 @@ public class TaskController {
                                     ModelAndView model){
         DataStorage storage = taskService.create(user, form);
         if(!storage.hasExceptions()){
-            model.setViewName(redirectHomePage);
+            model.setViewName(Values.REDIRECT_HOME_PAGE);
             return model;
         }
         // storage has exceptions
-        model.setViewName(createPage);
+        model.setViewName(TaskValues.CREATE_PAGE);
 
-        setText(storage, model);
+        fillModelByText(storage, model);
 
         // set categories field
         List<Category> categories = categoryService.findAllByUser(user); // should check if user does not have any category
-        model.addObject("categories", categories);
+        model.addObject(Values.CATEGORIES, categories);
 
-        setCategory(storage, model, categories.get(0));
+        fillModelByCategory(storage, model, categories.get(0));
         return model;
     }
     
-    @GetMapping("/update/{task}")
-    public ModelAndView getUpdateTaskPage(@Valid Task task, 
-                                            BindingResult result, 
-                                            @AuthenticationPrincipal User user, 
+    @GetMapping("/update/{id}")
+    public ModelAndView getUpdateTaskPage(@AuthenticationPrincipal User user, 
+                                            @PathVariable(value="id") Long id, // should check if id is long ?
                                             ModelAndView model){
-        if(!(user.equals(task.getUser()) || user.isAdmin())){
-            model.setViewName(redirectHomePage);
-            model.addObject("error", "Access denied!");
+        // check if task exists and user has access to it
+        DataStorage storage = taskService.get(user, id);
+        if(storage.hasExceptions()){
+            model.setViewName(Values.REDIRECT_HOME_PAGE);
             return model;
         }
-        model.setViewName(updatePage);
-        model.addObject("id", task.getId());
-        model.addObject("text", task.getText());
-        model.addObject("completed", task.getCompleted());
-        model.addObject("task", task);
-        model.addObject("categories", categoryService.findAllByUser(user));
-        model.addObject("categorySelected", task.getCategory());
+        model.setViewName(TaskValues.UPDATE_PAGE);
+        model.addObject(Values.ID, id);
+        Task task = (Task) storage.getData(Values.TASK);
+        model.addObject(Values.TEXT, task.getText());
+        model.addObject(Values.COMPLETED, task.getCompleted());
+        model.addObject(Values.CATEGORIES, categoryService.findAllByUser(user)); // it might be safe due to that task exist if and only if at least one category exists
+        model.addObject(Values.CATEGORY_SELECTED, task.getCategory());
         return model;
     }
 
@@ -98,66 +98,71 @@ public class TaskController {
                                     @RequestParam Map<String, String> form, 
                                     @PathVariable(value="id") Long id, // should check if id is long ?
                                     ModelAndView model){
-        DataStorage storage = taskService.update(id, user, form);
+        DataStorage storage = taskService.update(user, id, form);
         if(!storage.hasExceptions() 
-            || storage.hasException("access")
-            || storage.hasException("task")){
+            || storage.hasException(Values.ACCESS)
+            || storage.hasException(Values.TASK)){
             // storage does not have exceptions, has access exception or task is not found
-            model.setViewName(redirectHomePage);
+            model.setViewName(Values.REDIRECT_HOME_PAGE);
             return model;
         }
         // storage has exceptions
-        model.setViewName(updatePage);
+        model.setViewName(TaskValues.UPDATE_PAGE); 
         
         // set id
-        model.addObject("id", id);
+        model.addObject(Values.ID, id);
 
-        setText(storage, model);
+        fillModelByText(storage, model);
 
         // set categories field
         List<Category> categories = categoryService.findAllByUser(user);
-        model.addObject("categories", categories);
+        model.addObject(Values.CATEGORIES, categories);
 
-        setCategory(storage, model, ((Task) storage.getData("task")).getCategory());
+        fillModelByCategory(storage, model, ((Task) storage.getData(Values.TASK)).getCategory());
 
-        setCompleted(storage, model);
+        fillModelByCompleted(storage, model);
         return model;
     }
 
-    @PostMapping("/delete/{task}")
-    public ModelAndView deleteTask(@Valid Task task, 
-                                    BindingResult result, 
-                                    @AuthenticationPrincipal User user, 
+    @PostMapping("/delete/{id}")
+    public ModelAndView deleteTask(@AuthenticationPrincipal User user, 
+                                    @PathVariable(value="id") Long id, // should check if id is long ?
                                     ModelAndView model){
-        model.setViewName(redirectHomePage);
-        if(!(user.equals(task.getUser()) || user.isAdmin())) return model;
-        taskService.delete(task, result);
+        model.setViewName(Values.REDIRECT_HOME_PAGE);
+        DataStorage storage = taskService.delete(user, id);
+        if(storage.hasExceptions()){
+            // set some error to model
+        }
         return model;
     }
 
-    private void setText(DataStorage storage, ModelAndView model){
+    /*
+     * METHODS FILLING MODEL
+     */
+
+    private void fillModelByText(DataStorage storage, ModelAndView model){
         // set text field
-        if(storage.hasData("text")){
-            model.addObject("text", storage.getData("text"));
+        if(storage.hasData(Values.TEXT)){
+            model.addObject(Values.TEXT, storage.getData(Values.TEXT));
         } else{
-            model.addObject("textError", storage.getException("string"));
-            model.addObject("text", "Task text (autogenerated)");
+            model.addObject(Values.TEXT_ERROR, storage.getException(Values.STRING));
+            model.addObject(Values.TEXT, Values.TEXT_DEFAULT);
         }
     }
 
-    private void setCategory(DataStorage storage, ModelAndView model, Category category){
+    private void fillModelByCategory(DataStorage storage, ModelAndView model, Category category){
         // set categorySelected field
-        if(storage.hasData("category")){
-            model.addObject("categorySelected", storage.getData("category"));
+        if(storage.hasData(Values.CATEGORY)){
+            model.addObject(Values.CATEGORY_SELECTED, storage.getData(Values.CATEGORY));
         } else{
-            model.addObject("categoryError", storage.getException("category"));
-            model.addObject("categorySelected", category);
+            model.addObject(Values.CATEGORY_ERROR, storage.getException(Values.CATEGORY));
+            model.addObject(Values.CATEGORY_SELECTED, category);
         }
     }
 
-    private void setCompleted(DataStorage storage, ModelAndView model){
-        if(storage.hasData("completed")){
-            model.addObject("completed", storage.getData("completed"));
+    private void fillModelByCompleted(DataStorage storage, ModelAndView model){
+        if(storage.hasData(Values.COMPLETED)){
+            model.addObject(Values.COMPLETED, storage.getData(Values.COMPLETED));
         }
     }
 

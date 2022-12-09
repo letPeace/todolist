@@ -37,7 +37,7 @@
 
 </#macro>
 
-<#macro form h2 action value button>
+<#macro form type h2 action value button>
 
             <div class="col-md-6">
 
@@ -45,8 +45,8 @@
 
                 <form action="${action}" method="POST">
                     <div class="form-group">
-                        <label for="title">Text</label>
-                        <input class="form-control" type="text" name="title" id="title" placeholder="Put some text here" ${value}>
+                        <label for="title">Title</label>
+                        <input class="form-control" type="text" name="title" id="title" placeholder="Put some text here" value="${value}">
                     </div>
                     <@nav.csrf />
                     <button type="submit" class="btn btn-success">${button}</button>

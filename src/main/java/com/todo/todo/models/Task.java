@@ -12,9 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-import com.todo.todo.models.singletons.CategorySingleton;
-import com.todo.todo.models.singletons.UserSingleton;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +19,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "task")
-public class Task {
+public class Task implements HavingUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,9 +45,9 @@ public class Task {
     public Task() {
     }
 
-    public Task(String text){
+    /*public Task(String text){
         this(text, UserSingleton.get(), CategorySingleton.get());
-    }
+    }*/
 
     public Task(String text, User user, Category category) {
         this(text, Boolean.FALSE, Instant.now(), Instant.now(), user, category);
